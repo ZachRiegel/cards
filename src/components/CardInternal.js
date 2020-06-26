@@ -29,7 +29,7 @@ const CardBorder = styled.div`
 	bottom: -2px;
 	z-index: 5;
 	border-radius: 20px;
-	border: 10px solid #000000;
+	border: 4px solid #000000;
 	background-color: transparent;
 `;
 
@@ -83,7 +83,7 @@ const NameHeaderEntry = styled.div`
 
 const CardArt = styled.div`
 	height: 100%;
-	border: 8px solid #000000;
+	border: 4px solid #000000;
 	border-radius: 20px;
 	overflow: hidden;
 `;
@@ -95,7 +95,7 @@ const CardText = styled.div`
 	left: 50%;
 	transform: translateX(-50%);
 	text-align: wrap;
-	border: 8px solid #000000;
+	border: 4px solid #000000;
 	border-radius: 20px 20px 0 0;
 	font-family: 'B612', serif;
 	font-weight: 400;
@@ -127,11 +127,11 @@ const CardTextLine = styled.div`
 const CardIconBackdrop = styled.div`
 	width: min-content;
 	border-radius: 20px;
-	border: 8px solid #000000;
+	border: 4px solid #000000;
 	overflow: hidden;
 	display: grid;
 	grid-template-columns: repeat(2, min-content);
-	grid-column-gap: 8px;
+	grid-column-gap: 4px;
 	background-color: #000000;
 	${props => css`
 			${!props.noAbsolute?`position: absolute; right: 15px; bottom: 15px;`:''}
@@ -140,8 +140,8 @@ const CardIconBackdrop = styled.div`
 
 const CostMarker = styled.div`
     width: 280px;
-    height: 144px;
-    border: 8px solid #000000;
+    height: 136px;
+    border: 4px solid #000000;
     border-radius: 20px;
     position: relative;
     z-index: 5;
@@ -158,13 +158,13 @@ const HeaderRowContainer = styled.div`
 	flex: 1;
     display: grid;
     grid-template-columns: minmax(min-content, 1fr) min-content min-content;
-    grid-column-gap: 8px;
+    grid-column-gap: 4px;
     background-color: #000000;
     align-items: stretch;
     width: 100%;
     position: relative;
     z-index: 2;
-    border: 8px solid #000000;
+    border: 4px solid #000000;
     border-left: 0;
     margin-left: -8px;
     padding-left: 8px;
@@ -300,7 +300,6 @@ const generateBody = (body) => {
 
 const CardInternal = React.memo((props) => {
 	const [cardColors] = useState(getColors(props.color));
-	const [title] = useState(props.name || 'Untitled Card');
 	cardColors.textBarColor = getBarColor(props.barColor);
 	return(
 		<CardContainer {...cardColors}>
@@ -315,7 +314,7 @@ const CardInternal = React.memo((props) => {
 				</CostMarker>
 				<HeaderRowContainer>
 					<NameHeaderEntry {...cardColors}>
-						{title}
+						{props.name || 'Untitled Card'}
 					</NameHeaderEntry>
 					<HeaderEntry larger {...cardColors}>
 						<Icon name="range"/>

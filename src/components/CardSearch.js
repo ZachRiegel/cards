@@ -6,6 +6,7 @@ import FirebaseContext from 'contexts/FirebaseContext'
 
 import TagSelector from 'components/TagSelector'
 import CardRow from 'components/CardRow'
+import ScrollableSection from 'components/ScrollableSection'
 import Icon from 'components/Icon'
 
 const Splash = styled.div`
@@ -203,7 +204,6 @@ const CardSearch = () => {
 						|
 					`.replace(/\s/g,'').toLocaleLowerCase();
 					card.key = key;
-					console.log(card.lookup);
 					return card;
 				})
 			);
@@ -212,72 +212,70 @@ const CardSearch = () => {
 
 	return (
 		<Splash>
-			<div style={{flex: '1', position: 'relative', overflowY: 'auto', overflowX: 'hidden', display: 'flex', flexDirection: 'column'}}>
-				<div style={{marginRight: 'calc(100% - 100vw)', display: 'flex', flexDirection: 'column', flex: '1'}}>
-					<Cover ref={coverRef}/>
-					<HeaderBar hasShadow={hasShadow}>
-						<CardFilterRow>
-							<WidthLimiter>
-								<Icon name="search" smaller/>
-								<InputBar type="text" placeholder='Search Cards' value={filterText} onChange={(event)=>{
-									setFilterText(event.target.value);
-								}}/>
-							</WidthLimiter>
-						</CardFilterRow>
-						<IconFilterRow>
-							<WidthLimiter>
-								<TagRow>
-									<TagSelector
-										name="legionnaireSkill"
-										onSelect={selectTag}
-										selected={selectedTags}
-									/>
-									<TagSelector
-										name="swashbucklerSkill"
-										onSelect={selectTag}
-										selected={selectedTags}
-									/>
-									<TagSelector
-										name="barbarianSkill"
-										onSelect={selectTag}
-										selected={selectedTags}
-									/>
-									<TagSelector
-										name="marksmanSkill"
-										onSelect={selectTag}
-										selected={selectedTags}
-									/>
-									<TagSelector
-										name="airSkill"
-										onSelect={selectTag}
-										selected={selectedTags}
-									/>
-									<TagSelector
-										name="waterSkill"
-										onSelect={selectTag}
-										selected={selectedTags}
-									/>
-									<TagSelector
-										name="fireSkill"
-										onSelect={selectTag}
-										selected={selectedTags}
-									/>
-									<TagSelector
-										name="earthSkill"
-										onSelect={selectTag}
-										selected={selectedTags}
-									/>
-								</TagRow>
-							</WidthLimiter>
-						</IconFilterRow>
-					</HeaderBar>
-					<CardDisplayRow>
+			<ScrollableSection>
+				<Cover ref={coverRef}/>
+				<HeaderBar hasShadow={hasShadow}>
+					<CardFilterRow>
 						<WidthLimiter>
-							<CardRow cards={filteredCards}/>
+							<Icon name="search" smaller/>
+							<InputBar type="text" placeholder='Search Cards' value={filterText} onChange={(event)=>{
+								setFilterText(event.target.value);
+							}}/>
 						</WidthLimiter>
-					</CardDisplayRow>
-				</div>
-			</div>
+					</CardFilterRow>
+					<IconFilterRow>
+						<WidthLimiter>
+							<TagRow>
+								<TagSelector
+									name="legionnaireSkill"
+									onSelect={selectTag}
+									selected={selectedTags}
+								/>
+								<TagSelector
+									name="swashbucklerSkill"
+									onSelect={selectTag}
+									selected={selectedTags}
+								/>
+								<TagSelector
+									name="barbarianSkill"
+									onSelect={selectTag}
+									selected={selectedTags}
+								/>
+								<TagSelector
+									name="marksmanSkill"
+									onSelect={selectTag}
+									selected={selectedTags}
+								/>
+								<TagSelector
+									name="airSkill"
+									onSelect={selectTag}
+									selected={selectedTags}
+								/>
+								<TagSelector
+									name="waterSkill"
+									onSelect={selectTag}
+									selected={selectedTags}
+								/>
+								<TagSelector
+									name="fireSkill"
+									onSelect={selectTag}
+									selected={selectedTags}
+								/>
+								<TagSelector
+									name="earthSkill"
+									onSelect={selectTag}
+									selected={selectedTags}
+								/>
+							</TagRow>
+						</WidthLimiter>
+					</IconFilterRow>
+				</HeaderBar>
+				<CardDisplayRow>
+					<WidthLimiter>
+						<CardRow cards={filteredCards}/>
+					</WidthLimiter>
+				</CardDisplayRow>
+			</ScrollableSection>
 		</Splash>
 	);
 };
