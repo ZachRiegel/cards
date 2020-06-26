@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "0882f66724c0540c0c11dbe28d715d95",
+    "revision": "65f4ca551f2f82e63064439654497876",
     "url": "/cards/index.html"
   },
   {
-    "revision": "54e5763b916b4ea4c304",
+    "revision": "7bfca32200d61eaeae7b",
     "url": "/cards/static/css/main.0ea9c61a.chunk.css"
   },
   {
@@ -12,8 +12,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/cards/static/js/2.6f5cd159.chunk.js"
   },
   {
-    "revision": "54e5763b916b4ea4c304",
-    "url": "/cards/static/js/main.47bfaf9d.chunk.js"
+    "revision": "7bfca32200d61eaeae7b",
+    "url": "/cards/static/js/main.2198e69c.chunk.js"
   },
   {
     "revision": "b3559005ac009ddcdf02",
@@ -24,8 +24,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/cards/static/media/HexRange.b8258888.svg"
   },
   {
-    "revision": "f065cf2e55e18f85bf36df839edb0dd6",
-    "url": "/cards/static/media/airCard.f065cf2e.svg"
+    "revision": "9cd93d872b5c8548eabcb28ac4aa4faa",
+    "url": "/cards/static/media/airCard.9cd93d87.svg"
   },
   {
     "revision": "be0c7cbe9e172117a4691a649f9f2d85",
