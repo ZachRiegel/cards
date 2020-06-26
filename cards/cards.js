@@ -126,7 +126,9 @@ let cards = {
       `@child On a hit, deal @spellcastingModifier fire damage.`,
       `You may replace up to one oil token in the targeted zone with a fire token.`,
     ],
-    requirements: fireSkill: 1,
+    requirements: {
+      fireSkill: 1,
+    },
     maxCopies: 3,
     artName: 'searingSpear',
   },
@@ -490,7 +492,7 @@ let cards = {
       'earthSkill',
     ],
     body: [
-      `__Requires__: An equipped staff.`
+      `__Requires__: An equipped staff.`,
       `Make an attack roll against target creature's armor defense.`,
       `@child On a hit, deal 3 + @spellcastingModifier earth damage.`,
       `You may repeat this process up to two more times.`,
