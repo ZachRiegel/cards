@@ -1,16 +1,17 @@
 {
   "files": {
-    "main.css": "/cards/static/css/main.0ea9c61a.chunk.css",
-    "main.js": "/cards/static/js/main.7a3fa45b.chunk.js",
-    "main.js.map": "/cards/static/js/main.7a3fa45b.chunk.js.map",
-    "runtime~main.js": "/cards/static/js/runtime~main.747c6e56.js",
-    "runtime~main.js.map": "/cards/static/js/runtime~main.747c6e56.js.map",
-    "static/js/2.6f5cd159.chunk.js": "/cards/static/js/2.6f5cd159.chunk.js",
-    "static/js/2.6f5cd159.chunk.js.map": "/cards/static/js/2.6f5cd159.chunk.js.map",
+    "main.css": "/cards/static/css/main.7076bc5b.chunk.css",
+    "main.js": "/cards/static/js/main.bccd24fa.chunk.js",
+    "main.js.map": "/cards/static/js/main.bccd24fa.chunk.js.map",
+    "runtime-main.js": "/cards/static/js/runtime-main.0ecd247d.js",
+    "runtime-main.js.map": "/cards/static/js/runtime-main.0ecd247d.js.map",
+    "static/js/2.2f823cb8.chunk.js": "/cards/static/js/2.2f823cb8.chunk.js",
+    "static/js/2.2f823cb8.chunk.js.map": "/cards/static/js/2.2f823cb8.chunk.js.map",
     "index.html": "/cards/index.html",
-    "precache-manifest.1cf8e6e2f2be030eaec6c917d25441db.js": "/cards/precache-manifest.1cf8e6e2f2be030eaec6c917d25441db.js",
+    "precache-manifest.2c046cfa8f10e932e30a3e1f12bdd5a1.js": "/cards/precache-manifest.2c046cfa8f10e932e30a3e1f12bdd5a1.js",
     "service-worker.js": "/cards/service-worker.js",
-    "static/css/main.0ea9c61a.chunk.css.map": "/cards/static/css/main.0ea9c61a.chunk.css.map",
+    "static/css/main.7076bc5b.chunk.css.map": "/cards/static/css/main.7076bc5b.chunk.css.map",
+    "static/js/2.2f823cb8.chunk.js.LICENSE.txt": "/cards/static/js/2.2f823cb8.chunk.js.LICENSE.txt",
     "static/media/HexRange.svg": "/cards/static/media/HexRange.b8258888.svg",
     "static/media/airCard.svg": "/cards/static/media/airCard.9cd93d87.svg",
     "static/media/airSkill.svg": "/cards/static/media/airSkill.be0c7cbe.svg",
@@ -40,5 +41,11 @@
     "static/media/waterSkill.svg": "/cards/static/media/waterSkill.286f9bb4.svg",
     "static/media/weaponModifier.svg": "/cards/static/media/weaponModifier.06c45367.svg",
     "static/media/zeroCard.svg": "/cards/static/media/zeroCard.b28c4c92.svg"
-  }
+  },
+  "entrypoints": [
+    "static/js/runtime-main.0ecd247d.js",
+    "static/js/2.2f823cb8.chunk.js",
+    "static/css/main.7076bc5b.chunk.css",
+    "static/js/main.bccd24fa.chunk.js"
+  ]
 }
