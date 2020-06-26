@@ -157,7 +157,7 @@ const CostMarker = styled.div`
 const HeaderRowContainer = styled.div`
 	flex: 1;
     display: grid;
-    grid-template-columns: minmax(min-content, 1fr) min-content min-content
+    grid-template-columns: minmax(min-content, 1fr) min-content min-content;
     grid-column-gap: 8px;
     background-color: #000000;
     align-items: stretch;
