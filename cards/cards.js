@@ -36,7 +36,7 @@ let cards = {
     body: [
       `Make a spell attack against each creature's motoric defense in target zone.`,
       `@child On a hit, deal 2 + @spellcastingModifier damage.`,
-      `Place a @fireElementalToken in the targeted zone.`,
+      `Place a @fireSkill token in the targeted zone.`,
     ],
     requirements: {
       fireSkill: 1,
@@ -124,7 +124,7 @@ let cards = {
       `Target zone.`,
       `@child You may make a spell attack against one creature's armor defense in the targeted zone.`,
       `@child On a hit, deal @spellcastingModifier fire damage.`,
-      `You may replace up to one oil token in the targeted zone with a fire token.`,
+      `You may replace up to one oil token in the targeted zone with a @fireSkill token.`,
     ],
     requirements: {
       fireSkill: 1,
@@ -247,7 +247,7 @@ let cards = {
     color: 'white',
     name: 'Disperse',
     cost: {
-      air: 0,
+      any: 0,
     },
     range: '0-2',
     tags: [
@@ -341,7 +341,7 @@ let cards = {
       'waterSkill',
     ],
     body: [
-      `Heal yourself or target creature 12 + @spellcastingModifier.`,
+      `Heal yourself or target creature 12 + @spellcastingModifier .`,
       `Clear smouldering on the targeted creature.`,
     ],
     requirements: {
@@ -452,7 +452,7 @@ let cards = {
       'earthSkill',
     ],
     body: [
-      `Make a spell attack against target each creature's motorics defense in target zone.`,
+      `Make a spell attack against each creatures' motorics defense in target zone.`,
       `@child On a hit, set blinded 2 on the hit creature.`,
     ],
     requirements: {
@@ -514,7 +514,7 @@ let cards = {
       'earthSkill',
     ],
     body: [
-      `Place oil token in target zone.`,
+      `Place an oil token in target zone.`,
       `@child Make an attack roll against each creatures' motorics defense.`,
       `@child On a hit, set impaired 1 and slowed 1 on the hit creature.`,
     ],
@@ -748,7 +748,7 @@ let cards = {
     body: [
       `__Buff__ self 4.`,
       `While you are affected by this card, your air resistance is increased by 5.`,
-      `When you play this card, heal @spellcastingModifier.`,
+      `When you play this card, heal @spellcastingModifier .`,
     ],
     requirements: {
       barbarianSkill: 1,

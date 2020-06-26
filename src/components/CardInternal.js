@@ -275,7 +275,8 @@ const createRequirements = (iconNames) => {
 	let icons = [];
 	if (!iconNames) return [];
 	Object.keys(iconNames).forEach((key, index)=>{
-		icons.push(<span key={key} style={{fontSize: '28px'}}>{iconNames[key]}&nbsp;</span>, <Icon key={key+'Icon'} small name={key} border/>);
+		icons.push(<span key={key} style={{fontSize: '32px', marginRight: '-4px'}}>{iconNames[key]}&nbsp;</span>, <Icon key={key+'Icon'} small name={key} border/>)
+		if (index !== (Object.keys(iconNames).length-1)) icons.push(<Spacer key={key+'Spacer'}/>);
 	});
 	return icons;
 };

@@ -153,10 +153,6 @@ const CardSearch = () => {
 	}, [shadowIntersectionObserver]);
 	
 	const selectTag = (tag) => {
-		Object.keys(selectedTags).forEach((key)=> {
-			if (key!==tag) selectedTags[key]=false;
-		});
-
 		selectedTags[tag]=!selectedTags[tag];
 
 		setSelectedTags({...selectedTags});
