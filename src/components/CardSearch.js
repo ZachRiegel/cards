@@ -76,6 +76,8 @@ const tagLookup = {
 	legionnaireSkill: 'legionnaire',
 	swashbucklerSkill: 'swashbuckler',
 	marksmanSkill: 'marksman',
+	meleeAttack: 'melee',
+	rangedAttack: 'ranged',
 };
 
 const CardFilterRow = styled.div`
@@ -153,6 +155,10 @@ const CardSearch = () => {
 	}, [shadowIntersectionObserver]);
 	
 	const selectTag = (tag) => {
+		Object.keys(selectedTags).forEach((key)=> {
+			if (key!==tag) selectedTags[key]=false;
+		});
+
 		selectedTags[tag]=!selectedTags[tag];
 
 		setSelectedTags({...selectedTags});
@@ -164,12 +170,12 @@ const CardSearch = () => {
 				Object.entries(snapshot.val()).map(([key, card])=>{
 					card.lookup = `
 						|n:${card.name}
-						|c:${((cost)=>{
+						|cost:${((cost)=>{
 							const abbreviationLookup = {
-								waterSkill: 'h',
-								airSkill: 'a',
-								earthSkill: 'g',
-								fireSkill: 'p',
+								water: 'h',
+								air: 'a',
+								earth: 'g',
+								fire: 'p',
 								barbarianSkill: 'b',
 								legionnaireSkill: 'l',
 								swashbucklerSkill: 's',
@@ -177,12 +183,11 @@ const CardSearch = () => {
 							}
 							let result='';
 							if (!cost) cost={};
-							if (cost.any!==undefined) result+=String(cost.any);
-							
+							if (cost.any!==undefined) result+=`[c:${String(cost.any)}]`;
 							Object.keys(cost).forEach((key, index)=>{
 								if (key==='any') return;
 								if (cost[key]) {
-									result += abbreviationLookup[key] + String(cost[key]);
+									result += `[c:${abbreviationLookup[key] + String(cost[key])}]`;
 								}
 							});
 							return result;
@@ -195,13 +200,10 @@ const CardSearch = () => {
 							});
 							return result;
 						})(card.tags)}
-						|b:${((body)=>{
-							if (!body) return '';
-							return body.reduce((acc, line)=>{return acc+'\n'+line});
-						})(card.body)}
 						|
 					`.replace(/\s/g,'').toLocaleLowerCase();
 					card.key = key;
+					console.log(card.lookup);
 					return card;
 				})
 			);

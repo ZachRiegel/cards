@@ -341,7 +341,7 @@ let cards = {
       'waterSkill',
     ],
     body: [
-      `Heal yourself or target creature 12 + @spellcastingModifier .`,
+      `Restore 12 + @spellcastingModifier health to yourself or target creature.`,
       `Clear smouldering on the targeted creature.`,
     ],
     requirements: {
@@ -538,7 +538,7 @@ let cards = {
       'barbarianSkill',
     ],
     body: [
-      `__Buff__ self 4.`,
+      `__Buff__, self, 4 turns.`,
       `While you are affected by this card, your physical resistance is increased by 5.`,
     ],
     requirements: {
@@ -559,7 +559,7 @@ let cards = {
     ],
     body: [
       `__Reaction__: After the slowed, immobilized, impaired, or fatigued condition is set on you.`,
-      `__Buff__ self 1.`,
+      `__Buff__, self, 1 turns.`,
       `While you are affected by this card, you have immunity to slowed, immobilized, impaired, and fatigued.`,
     ],
     requirements: {
@@ -582,7 +582,7 @@ let cards = {
     body: [
       `Make a melee attack against target creature's armor defense.`,
       `@child On a hit, deal @weaponModifier physical damage.`,
-      `@child If a creature took damage from this, set immobilized 1 and dazed 1 on it. If you are under the effects of a @barbarianSkill buff, set impaired 1 on it as well.`,
+      `@child If a creature took damage from this, set immobilized 1 and dazed 1 on it. If you are under the effects of a @barbarianSkill card, set impaired 1 on it as well.`,
     ],
     requirements: {
       barbarianSkill: 1,
@@ -605,7 +605,7 @@ let cards = {
       `__Requires__: Two weapons equipped`,
       `Make a melee weapon attack against target creature's armor defense.`,
       `@child On a hit, deal 4 + @weaponModifier damage.`,
-      `@child If a creature took damage from this attack and you are under the effects of a @barbarianSkill buff, set dazed 1 on it.`,
+      `@child If a creature took damage from this attack and you are under the effects of a @barbarianSkill card, set dazed 1 on it.`,
       `You may repeat this process once more.`,
     ],
     requirements: {
@@ -627,7 +627,7 @@ let cards = {
     ],
     body: [
       `Make a melee weapon attack against target creature's armor defense.`,
-      `@child On a hit deal 6 + @weaponModifier physical damage. If you are under the effects of a @barbarianSkill buff, deal 10 + @weaponModifier damage instead.`,
+      `@child On a hit deal 6 + @weaponModifier physical damage. If you are under the effects of a @barbarianSkill card, deal 10 + @weaponModifier damage instead.`,
     ],
     requirements: {
       barbarianSkill: 1,
@@ -649,7 +649,7 @@ let cards = {
     body: [
       `__Requires__: A two-handed melee weapon equipped`,
       `Make a melee attack against up to two target creatures' armor defense.`,
-      `@child On a hit, deal 6 + @weaponModifier physical damage. If you are under the effects of a @barbarianSkill buff, deal 12 + @weaponModifier physical damage instead.`,
+      `@child On a hit, deal 6 + @weaponModifier physical damage. If you are under the effects of a @barbarianSkill card, deal 12 + @weaponModifier physical damage instead.`,
     ],
     requirements: {
       barbarianSkill: 1, 
@@ -696,9 +696,9 @@ let cards = {
       `airSkill`,
     ],
     body: [
-      `__Buff__ self 4.`,
+      `__Buff__, self, 4 turns.`,
       `While you are affected by this card, your air resistance is increased by 5.`,
-      `When you play this card, you may shift 1`,
+      `When you play this card, you may shift 1.`,
     ],
     requirements: {
       barbarianSkill: 1,
@@ -746,9 +746,9 @@ let cards = {
       `waterSkill`,
     ],
     body: [
-      `__Buff__ self 4.`,
-      `While you are affected by this card, your air resistance is increased by 5.`,
-      `When you play this card, heal @spellcastingModifier .`,
+      `__Buff__, self, 4 turns.`,
+      `While you are affected by this card, your water resistance is increased by 5.`,
+      `When you play this card, restore @spellcastingModifier health.`,
     ],
     requirements: {
       barbarianSkill: 1,
@@ -796,7 +796,7 @@ let cards = {
       `fireSkill`,
     ],
     body: [
-      `__Buff__ self 4.`,
+      `__Buff__, self, 4 turns.`,
       `While you are affected by this card, your fire resistance is increased by 5.`,
       `When you play this card, make an attack against each creatures' physique defense in target zone.`,
       `On a hit, deal @spellcastingModifier fire damage.`
@@ -847,9 +847,9 @@ let cards = {
       `earthSkill`,
     ],
     body: [
-      `__Buff__ self 4.`,
+      `__Buff__, self, 4 turns.`,
       `While you are affected by this card, your earth resistance is increased by 5.`,
-      `When you play this card, set your armor and physique defense dice to their maximum value`,
+      `When you play this card, set your armor and physique defense dice to their maximum value.`,
     ],
     requirements: {
       barbarianSkill: 1,

@@ -181,7 +181,7 @@ const RangeContainer = styled.div`
 `;
 
 const Spacer = styled.div`
-	width: 20px;
+	width: 12px;
 `;
 
 const getColors = (name) => {
