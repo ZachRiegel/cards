@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "10e5ec005aff32f8c69fdf9932a18eaf",
+    "revision": "e835015714ce94b41448d44c8f47ae32",
     "url": "/cards/index.html"
   },
   {
-    "revision": "6b4fa9e36467699acd99",
+    "revision": "4f1da064d43fc26b954d",
     "url": "/cards/static/css/main.260752db.chunk.css"
   },
   {
@@ -16,8 +16,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/cards/static/js/2.facce07d.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "6b4fa9e36467699acd99",
-    "url": "/cards/static/js/main.b489267c.chunk.js"
+    "revision": "4f1da064d43fc26b954d",
+    "url": "/cards/static/js/main.9a9de9a9.chunk.js"
   },
   {
     "revision": "90e115c7577e1a37cdfd",
@@ -28,12 +28,12 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/cards/static/media/HexRange.b8258888.svg"
   },
   {
-    "revision": "b02a52ee37a3a7f285f3bee58421b882",
-    "url": "/cards/static/media/airCard.b02a52ee.svg"
+    "revision": "3a451b483134e99f03aea66a7992e175",
+    "url": "/cards/static/media/airCard.3a451b48.svg"
   },
   {
-    "revision": "d097c56ce55038dff5202a24176df321",
-    "url": "/cards/static/media/airSkill.d097c56c.svg"
+    "revision": "3876e5f7553d82b79f80f6d24cdda581",
+    "url": "/cards/static/media/airSkill.3876e5f7.svg"
   },
   {
     "revision": "4d13f3ac1475db49c4c760c032ed92cb",
