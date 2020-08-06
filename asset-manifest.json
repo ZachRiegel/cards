@@ -1,20 +1,20 @@
 {
   "files": {
     "main.css": "/cards/static/css/main.260752db.chunk.css",
-    "main.js": "/cards/static/js/main.9a9de9a9.chunk.js",
-    "main.js.map": "/cards/static/js/main.9a9de9a9.chunk.js.map",
+    "main.js": "/cards/static/js/main.c112eb8a.chunk.js",
+    "main.js.map": "/cards/static/js/main.c112eb8a.chunk.js.map",
     "runtime-main.js": "/cards/static/js/runtime-main.0ecd247d.js",
     "runtime-main.js.map": "/cards/static/js/runtime-main.0ecd247d.js.map",
     "static/js/2.facce07d.chunk.js": "/cards/static/js/2.facce07d.chunk.js",
     "static/js/2.facce07d.chunk.js.map": "/cards/static/js/2.facce07d.chunk.js.map",
     "index.html": "/cards/index.html",
-    "precache-manifest.c48e8222b3fe02263f931ec6c1039f0e.js": "/cards/precache-manifest.c48e8222b3fe02263f931ec6c1039f0e.js",
+    "precache-manifest.cfe58938e59f4e34db63825d00edd35c.js": "/cards/precache-manifest.cfe58938e59f4e34db63825d00edd35c.js",
     "service-worker.js": "/cards/service-worker.js",
     "static/css/main.260752db.chunk.css.map": "/cards/static/css/main.260752db.chunk.css.map",
     "static/js/2.facce07d.chunk.js.LICENSE.txt": "/cards/static/js/2.facce07d.chunk.js.LICENSE.txt",
     "static/media/HexRange.svg": "/cards/static/media/HexRange.b8258888.svg",
     "static/media/airCard.svg": "/cards/static/media/airCard.3a451b48.svg",
-    "static/media/airSkill.svg": "/cards/static/media/airSkill.3876e5f7.svg",
+    "static/media/airSkill.svg": "/cards/static/media/airSkill.1ba78448.svg",
     "static/media/attack.svg": "/cards/static/media/attack.4d13f3ac.svg",
     "static/media/barbarianSkill.svg": "/cards/static/media/barbarianSkill.364762a0.svg",
     "static/media/cardCopies.svg": "/cards/static/media/cardCopies.0467d2a7.svg",
@@ -46,6 +46,6 @@
     "static/js/runtime-main.0ecd247d.js",
     "static/js/2.facce07d.chunk.js",
     "static/css/main.260752db.chunk.css",
-    "static/js/main.9a9de9a9.chunk.js"
+    "static/js/main.c112eb8a.chunk.js"
   ]
 }
