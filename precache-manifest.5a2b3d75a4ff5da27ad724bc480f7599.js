@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "19dba9f92566877f6e69798c9c5e34f4",
+    "revision": "aceba910cf8fa189c7000333ca28a272",
     "url": "/cards/index.html"
   },
   {
-    "revision": "7e1179d5b4d923511f69",
+    "revision": "4b9de0a5193a2c5997c4",
     "url": "/cards/static/css/main.260752db.chunk.css"
   },
   {
@@ -16,8 +16,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/cards/static/js/2.7bb1e666.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "7e1179d5b4d923511f69",
-    "url": "/cards/static/js/main.9428d25f.chunk.js"
+    "revision": "4b9de0a5193a2c5997c4",
+    "url": "/cards/static/js/main.5d847017.chunk.js"
   },
   {
     "revision": "90e115c7577e1a37cdfd",
@@ -52,12 +52,12 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/cards/static/media/child.d32ebba4.svg"
   },
   {
-    "revision": "29336f089cadf7718da1e4d522987d21",
-    "url": "/cards/static/media/earthCard.29336f08.svg"
+    "revision": "1281d328669a5fddc72711c3fdadbe0d",
+    "url": "/cards/static/media/earthCard.1281d328.svg"
   },
   {
-    "revision": "0a5ad0167dad28099f122106e62bed8f",
-    "url": "/cards/static/media/earthSkill.0a5ad016.svg"
+    "revision": "1823139f58ae7634fe817be6ee9f0c6d",
+    "url": "/cards/static/media/earthSkill.1823139f.svg"
   },
   {
     "revision": "e1222747afdfaf0553d1badd392a9bfe",
@@ -84,8 +84,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/cards/static/media/marksmanSkill.8daa53b6.svg"
   },
   {
-    "revision": "219b7aef5caec1d4a47b237d3bc7c267",
-    "url": "/cards/static/media/meleeAttack.219b7aef.svg"
+    "revision": "de709aabc204244a46829ce4d3f019c2",
+    "url": "/cards/static/media/meleeAttack.de709aab.svg"
   },
   {
     "revision": "d64784383770d4d3c759a93925e92cf6",
@@ -100,8 +100,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/cards/static/media/paper.03cadc98.jpg"
   },
   {
-    "revision": "b3a57885975800cabf8f71d45c6da0b7",
-    "url": "/cards/static/media/rangedAttack.b3a57885.svg"
+    "revision": "fd24126a2b50b9dbf4c99a9221678e1f",
+    "url": "/cards/static/media/rangedAttack.fd24126a.svg"
   },
   {
     "revision": "55b0ed84edc3230f8c48a5e23a861f0e",
