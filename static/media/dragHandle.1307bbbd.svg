@@ -5,12 +5,10 @@
 <style type="text/css">
 	.st0{fill:#6E6E6E;stroke:#6E6E6E;stroke-width:4;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:10;}
 </style>
-<g>
-	<circle class="st0" cx="39" cy="15" r="3.5"/>
-	<circle class="st0" cx="25" cy="32" r="3.4"/>
-	<circle class="st0" cx="39" cy="32" r="3.4"/>
-	<circle class="st0" cx="25" cy="49" r="3.5"/>
-	<circle class="st0" cx="25" cy="15" r="3.5"/>
-	<circle class="st0" cx="39" cy="49" r="3.5"/>
-</g>
+<circle class="st0" cx="40" cy="15" r="3.5"/>
+<circle class="st0" cx="24" cy="32" r="3.4"/>
+<circle class="st0" cx="40" cy="32" r="3.4"/>
+<circle class="st0" cx="24" cy="49" r="3.5"/>
+<circle class="st0" cx="24" cy="15" r="3.5"/>
+<circle class="st0" cx="40" cy="49" r="3.5"/>
 </svg>
