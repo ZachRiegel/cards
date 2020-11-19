@@ -2,10 +2,12 @@ import React, {useState, useContext, useEffect, useCallback} from 'react'
 
 import styled, {css} from 'styled-components'
 
-import FirebaseContext from 'contexts/FirebaseContext'
+import CardContext from 'contexts/CardContext'
+import AnimationContext from 'contexts/AnimationContext'
 
 import TagSelector from 'components/TagSelector'
 import CardRow from 'components/CardRow'
+import CardLoader from 'components/CardLoader'
 import ScrollableSection from 'components/ScrollableSection'
 import Icon from 'components/Icon'
 
@@ -68,19 +70,6 @@ const TagRow = styled.div`
     justify-content: space-between;
 `;
 
-const tagLookup = {
-	waterSkill: 'hydromancer',
-	airSkill: 'aeromancer',
-	earthSkill: 'geomancer',
-	fireSkill: 'pyromancer',
-	barbarianSkill: 'barbarian',
-	legionnaireSkill: 'legionnaire',
-	swashbucklerSkill: 'swashbuckler',
-	marksmanSkill: 'marksman',
-	meleeAttack: 'melee',
-	rangedAttack: 'ranged',
-};
-
 const CardFilterRow = styled.div`
 	padding: 10px;
 	border-bottom: 3px solid #00b4d8;
@@ -90,7 +79,7 @@ const CardFilterRow = styled.div`
 
 const CardDisplayRow = styled.div`
 	flex: 1;
-	background-color: #e5e7e9;
+	background-color: #e2e6ea;
 `;
 
 const IconFilterRow = styled.div`
@@ -98,10 +87,34 @@ const IconFilterRow = styled.div`
 	background-color: #f2f2f2;
 `;
 
-const CardSearch = () => {
-	const firebase = useContext(FirebaseContext);
+const CardContextWrapper = (Comp) => (props) => {
+	return (
+		<CardLoader>
+			<Comp {...props}/>
+		</CardLoader>
+	);
+}
 
+const tagLookup = {
+  waterSkill: 'hydromancer',
+  airSkill: 'aeromancer',
+  earthSkill: 'geomancer',
+  fireSkill: 'pyromancer',
+  barbarianSkill: 'barbarian',
+  legionnaireSkill: 'legionnaire',
+  swashbucklerSkill: 'swashbuckler',
+  marksmanSkill: 'marksman',
+  meleeAttack: 'melee',
+  rangedAttack: 'ranged',
+};
+
+const CardSearch = () => {
+	const cardDefinitions = useContext(CardContext);
 	const [cards, setCards] = useState([]);
+	useEffect(() => {
+		setCards(Object.values(cardDefinitions));
+	}, [cardDefinitions]);
+	const animation = useContext(AnimationContext);
 	const [filteredCards, setFilteredCards] = useState([]);
 	const [selectedTags, setSelectedTags] = useState({});
 	const [filterText, setFilterText] = useState('');
@@ -110,13 +123,23 @@ const CardSearch = () => {
 	//filter cards
 	useEffect(() => {
 		if(!cards) return;
+		if(
+			!animation
+			|| !animation.completed
+		) return;
 		let newCards = JSON.parse(JSON.stringify(cards));
 		newCards.forEach(card => card.hidden=false);
 
 		let filters = [];
 
 		if (filterText) {
-			filters.push(...filterText.toLocaleLowerCase().split(/\s/g));
+			filters.push(...filterText.toLocaleLowerCase().split(/\s/g).map((val) => {
+				try {
+					return new RegExp(val);
+				} catch(e) {
+					return val;
+				}
+			}));
 		}
 
 		filters.push(...Object.keys(selectedTags)
@@ -125,18 +148,24 @@ const CardSearch = () => {
 
 		filters.forEach((filter) => {
 			newCards.forEach(card => {
-				card.hidden = !card.lookup.match(filter) || card.hidden;
+				try {
+					card.hidden = !card.lookup.match(filter) || card.hidden;
+				} catch(e) {
+					card.hidden = false;
+				}
 			});
 		});
 
 		setFilteredCards(newCards);
-	}, [cards, selectedTags, filterText]);
+	}, [cards, selectedTags, filterText, animation]);
 
 	//determine if shadow should be added to header bar
 	const [shadowIntersectionObserver] = useState(new IntersectionObserver((entries)=>{
 		entries.forEach((entry)=>{
 			const coverBounds = entry.boundingClientRect;
 			const viewportBounds = entry.rootBounds;
+
+			if(!coverBounds || !viewportBounds) return;
 			
 			if (
 				coverBounds.bottom >= viewportBounds.top
@@ -154,61 +183,18 @@ const CardSearch = () => {
 		shadowIntersectionObserver.disconnect();
 		shadowIntersectionObserver.observe(node);
 	}, [shadowIntersectionObserver]);
-	
-	const selectTag = (tag) => {
-		Object.keys(selectedTags).forEach((key)=> {
-			if (key!==tag) selectedTags[key]=false;
+
+	const selectTag = useCallback((tag) => {
+		let newTags = {...selectedTags};
+
+		Object.keys(newTags).forEach((key)=> {
+			if (key!==tag) newTags[key]=false;
 		});
 
-		selectedTags[tag]=!selectedTags[tag];
+		newTags[tag]=!newTags[tag];
 
-		setSelectedTags({...selectedTags});
-	};
-
-	useEffect(()=>{
-		firebase.database.ref('/Cards/').on('value', (snapshot) => {
-			setCards(
-				Object.entries(snapshot.val()).map(([key, card])=>{
-					card.lookup = `
-						|n:${card.name}
-						|cost:${((cost)=>{
-							const abbreviationLookup = {
-								water: 'h',
-								air: 'a',
-								earth: 'g',
-								fire: 'p',
-								barbarianSkill: 'b',
-								legionnaireSkill: 'l',
-								swashbucklerSkill: 's',
-								marksmanSkill: 'm',
-							}
-							let result='';
-							if (!cost) cost={};
-							if (cost.any!==undefined) result+=`[c:${String(cost.any)}]`;
-							Object.keys(cost).forEach((key, index)=>{
-								if (key==='any') return;
-								if (cost[key]) {
-									result += `[c:${abbreviationLookup[key] + String(cost[key])}]`;
-								}
-							});
-							return result;
-						})(card.cost)}|
-						|tags:${((tags)=>{
-							if (!tags) return '';
-							let result = '';
-							tags.forEach((value, index)=>{
-								result+=`[t:${tagLookup[value]}]`;
-							});
-							return result;
-						})(card.tags)}
-						|
-					`.replace(/\s/g,'').toLocaleLowerCase();
-					card.key = key;
-					return card;
-				})
-			);
-		});
-	}, [firebase]);
+		setSelectedTags({...newTags});
+	}, [selectedTags]);
 
 	return (
 		<Splash>
@@ -279,4 +265,5 @@ const CardSearch = () => {
 		</Splash>
 	);
 };
+
 export default CardSearch;

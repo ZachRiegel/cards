@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useCallback} from 'react'
 
 import styled from 'styled-components'
 
@@ -16,6 +16,19 @@ const Card = React.memo((props) => {
 	const [scale, setScale] = useState(.3);
 	const [cardProps, setCardProps] = useState();
 
+	//resize cards to fill screen correctly
+    const [onCardResizeObserver] = useState(new ResizeObserver((entries)=>{
+        entries.forEach((entry) => {
+            setScale(Math.floor(entry.target.offsetWidth/5)*5/1400);
+        });
+    }));
+    //card isn't guaranteed to be on dom at first render, using callback instead of ref
+    const cardMeasure = useCallback(node => {
+        if (!node) return;
+        onCardResizeObserver.disconnect();
+        onCardResizeObserver.observe(node);
+    }, [onCardResizeObserver]);
+
 	useEffect(()=>{
 		if (props.scale) {
 			setScale(props.scale);
@@ -32,9 +45,11 @@ const Card = React.memo((props) => {
 	}, [props]);
 
 	return(
-		<Scaling scale={scale}>
-			{cardProps?<CardInternal {...cardProps}/>:null}
-		</Scaling>
+		<div style={{width: '100%', height: '100%'}} ref={props.noAutoScaling?undefined:cardMeasure}>
+			<Scaling scale={scale}>
+				{cardProps?<CardInternal {...cardProps}/>:null}
+			</Scaling>
+		</div>
 	);
 });
 

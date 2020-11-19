@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useCallback} from 'react'
 
 import styled, {css} from 'styled-components'
 
@@ -41,6 +41,8 @@ const TagIcon = styled.div`
     width: 60px;
     flex: 1;
     z-index: 0;
+    padding: 0;
+    margin: 0;
 `;
 
 const TagText = styled.span`
@@ -59,53 +61,18 @@ const TagText = styled.span`
     }}
 `;
 
-const TagMask = styled.div`
-    position: absolute;
-    top: 3%;
-    left: 3%;
-    right: 3%;
-    bottom: 3%;
-    border-radius: 100%;
-    background-color: white;
-    ${props => {
-        if (props.selected) return css`
-            background-color: transparent;
-        `
-    }}
-    z-index: 2;
-    mix-blend-mode: color;
-    cursor: pointer;
-`;
-
-const TagDarken = styled.div`
-    position: absolute;
-    top: 3%;
-    left: 3%;
-    right: 3%;
-    bottom: 3%;
-    border-radius: 100%;
-    background-color: rgba(0,0,0,.25);
-    ${props => {
-        if (props.selected) return css`
-            background-color: transparent;
-        `
-    }}
-    z-index: 3;
-    cursor: pointer;
-`;
-
 const TagRing = styled.span`
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    top: 3%;
+    left: 3%;
+    right: 3%;
+    bottom: 3%;
     border-radius: 100%;
     border: 3px solid transparent;
     background-color: transparent !important;
     ${props => props.selected
         ? css`
-            border-color: black !important;
+            border-color: transparent !important;
         `
         : null
     }
@@ -125,15 +92,14 @@ const displayNames = {
 }
 
 const TagSelector = React.memo((props) => {
+    const iconClicked = useCallback(()=>{
+        if (props.onSelect) props.onSelect(props.name);
+    }, [props]);
     return(
         <TagWrapper>
-            <TagContainer onClick={()=>{
-                if (props.onSelect) props.onSelect(props.name);
-            }} selected={props.selected[props.name]}>
+            <TagContainer onClick={iconClicked} selected={props.selected[props.name]}>
                 <TagIcon>
-                    <Icon name={props.name} full/>
-                    <TagMask selected={props.selected[props.name]}/>
-                    <TagDarken selected={props.selected[props.name]}/>
+                    <Icon border name={props.name} greyscale={!props.selected[props.name]} full/>
                     <TagRing selected={props.selected[props.name]}/>
                 </TagIcon>
                 <TagText selected={props.selected[props.name]}>

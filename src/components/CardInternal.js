@@ -1,9 +1,10 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 
 import styled, {css} from 'styled-components'
 
 import ImageLoader from 'components/ImageLoader'
 import Icon from 'components/Icon'
+import {createCostIcons} from 'components/CardUtilities'
 
 const CardContainer = styled.div`
 	border-radius: 20px;
@@ -11,14 +12,89 @@ const CardContainer = styled.div`
 	top: 50%;
 	left: 50%;
 	transform: translateX(-50%) translateY(-50%);
-	padding: 32px;
+	padding: 38px;
 	width: 1400px;
 	height: 1000px;
 	margin: 0;
-	box-shadow: 10px 10px 25px 15px #777;
 	${props => css`
-		background-image: linear-gradient(to right, ${props.backgroundColor1} 35%, ${props.backgroundColor2} 50%, ${props.backgroundColor3} 65%);
+		${props.hasShadow?'box-shadow: 10px 10px 25px 15px #777;':''}
 	`}
+`;
+
+const CardBackgroundLeft = styled.div`
+	position: absolute;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	width: 101px;
+	z-index: -1;
+	border-radius: 20px 0 0 20px;
+	${props => css`
+		background-color: ${props.backgroundColor1};
+	`}
+	&:after{
+		left: calc(100% - 2px);
+	    top: 0;
+	    bottom: 0;
+	    content: "";
+	    position: absolute;
+	    border-bottom: 1000px solid transparent;
+		${props => css`
+			border-left: 1200px solid ${props.backgroundColor1};
+		`}
+	}
+`;
+
+const CardSeparator = styled.div`
+	position: absolute;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	width: 104px;
+	z-index: -1;
+	border-radius: 0 20px 20px 0;
+	${props => css`
+		background-color: ${props.backgroundColor1===props.backgroundColor2
+				? props.backgroundColor1
+				: '#000000'};
+	`}
+	&:after{
+		right: calc(100% - 1px);
+	    top: 0;
+	    bottom: 0;
+	    content: "";
+	    position: absolute;
+	    border-top: 1000px solid transparent;
+		${props => css`
+			border-right: 1200px solid ${props.backgroundColor1===props.backgroundColor2
+				? props.backgroundColor1
+				: '#000000'};
+		`}
+	}
+`;
+
+const CardBackgroundRight = styled.div`
+	position: absolute;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	width: 99px;
+	z-index: -1;
+	border-radius: 0 20px 20px 0;
+	${props => css`
+		background-color: ${props.backgroundColor2};
+	`}
+	&:after{
+		right: calc(100% - 2px);
+	    top: 0;
+	    bottom: 0;
+	    content: "";
+	    position: absolute;
+	    border-top: 1000px solid transparent;
+		${props => css`
+			border-right: 1200px solid ${props.backgroundColor2};
+		`}
+	}
 `;
 
 const CardBorder = styled.div`
@@ -36,9 +112,9 @@ const CardBorder = styled.div`
 const CardHeader = styled.div`
     overflow: hidden;
     position: absolute;
-    top: 15px;
-    left: 15px;
-    right: 15px;
+    top: 18px;
+    left: 18px;
+    right: 18px;
     z-index: 2;
     display: -ms-flexbox;
     display: flex;
@@ -91,17 +167,18 @@ const CardArt = styled.div`
 const CardText = styled.div`
 	position: absolute;
 	width: 85%;
-	bottom: 32px;
+	bottom: 40px;
 	left: 50%;
 	transform: translateX(-50%);
 	text-align: wrap;
 	border: 4px solid #000000;
+	border-bottom: 2px solid #000000;
 	border-radius: 20px 20px 0 0;
 	font-family: 'B612', serif;
 	font-weight: 400;
 	display:flex;
 	flex-direction: column;
-	background-color: rgba(255, 255, 255, .95);
+	background-color: rgba(255, 255, 255, .96);
 `;
 
 const CardTextLine = styled.div`
@@ -112,15 +189,12 @@ const CardTextLine = styled.div`
 	justify-content: space-around;
 	padding: 15px;
 	overflow: hidden;
-	line-height: 36px;
+	line-height: 50px;
 	&:first-child {
 		border-radius: 10px 10px 0 0;
 	}
-	&:nth-child(even) {
+	&:nth-child(2n) {
 		background-color: rgba(0, 0, 0, .1);
-	}
-	&:first-child:last-child {
-		justify-content: start;
 	}
 `;
 
@@ -130,16 +204,18 @@ const CardIconBackdrop = styled.div`
 	border: 4px solid #000000;
 	overflow: hidden;
 	display: grid;
-	grid-template-columns: repeat(2, min-content);
 	grid-column-gap: 4px;
 	background-color: #000000;
 	${props => css`
-			${!props.noAbsolute?`position: absolute; right: 15px; bottom: 15px;`:''}
+		${!props.noAbsolute?`position: absolute; right: 18px; bottom: 18px;`:''}
+		grid-template-columns: repeat(${props.columnCount}, min-content);
 	`}
 `;
 
 const CostMarker = styled.div`
-    width: 280px;
+    width: min-content;
+    padding-left: 20px;
+    padding-right: 20px;
     height: 136px;
     border: 4px solid #000000;
     border-radius: 20px;
@@ -150,8 +226,8 @@ const CostMarker = styled.div`
     flex-direction: row;
     justify-content: center;
     align-items: center;
-		font-family: 'B612', serif;
-		font-size: 48px;
+	font-family: 'B612', serif;
+	font-size: 48px;
 `
 
 const HeaderRowContainer = styled.div`
@@ -165,10 +241,16 @@ const HeaderRowContainer = styled.div`
     position: relative;
     z-index: 2;
     border: 4px solid #000000;
-    border-left: 0;
     margin-left: -8px;
     padding-left: 8px;
     border-radius: 0 20px 20px 0;
+    ${props => css`
+		${props.cost ? `
+			border-radius: 20px 20px 20px 20px;
+		    margin-left: 0;
+		    padding-left: 0;
+		` : 'border-left: 0;'}
+	`}
     overflow: hidden;
 `;
 
@@ -186,71 +268,91 @@ const Spacer = styled.div`
 
 const getColors = (name) => {
 	switch (name) {
-		case 'red':
-			return {
-				backgroundColor1: '#770000',
-				backgroundColor2: '#770000',
-				backgroundColor3: '#770000',
-			};
 		case 'white':
 			return {
-				backgroundColor1: '#eeeeee',
-				backgroundColor2: '#eeeeee',
-				backgroundColor3: '#eeeeee',
+				backgroundColor1: '#f7f7f7',
+				backgroundColor2: '#f7f7f7',
+			}
+		case 'white/blue':
+			return {
+				backgroundColor1: '#f7f7f7',
+				backgroundColor2: '#4466aa',
+			}
+		case 'white/red':
+			return {
+				backgroundColor1: '#f7f7f7',
+				backgroundColor2: '#880000',
+			}
+		case 'white/green':
+			return {
+				backgroundColor1: '#f7f7f7',
+				backgroundColor2: '#0c623f',
 			}
 		case 'blue':
 			return {
-				backgroundColor1: '#334477',
-				backgroundColor2: '#334477',
-				backgroundColor3: '#334477',
+				backgroundColor1: '#4466aa',
+				backgroundColor2: '#4466aa',
+			};
+		case 'blue/green':
+			return {
+				backgroundColor1: '#4466aa',
+				backgroundColor2: '#0c623f',
+			};
+		case 'blue/red':
+			return {
+				backgroundColor1: '#4466aa',
+				backgroundColor2: '#880000',
+			};
+		case 'red':
+			return {
+				backgroundColor1: '#880000',
+				backgroundColor2: '#880000',
+			};
+		case 'red/green':
+			return {
+				backgroundColor1: '#880000',
+				backgroundColor2: '#0c623f',
 			};
 		case 'green':
 			return {
 				backgroundColor1: '#0c623f',
 				backgroundColor2: '#0c623f',
-				backgroundColor3: '#0c623f',
+			};
+		case 'brown/white':
+			return {
+				backgroundColor1: '#5e3023',
+				backgroundColor2: '#f7f7f7',
+			};
+		case 'brown/blue':
+			return {
+				backgroundColor1: '#5e3023',
+				backgroundColor2: '#4466aa',
+			};
+		case 'brown/red':
+			return {
+				backgroundColor1: '#5e3023',
+				backgroundColor2: '#880000',
+			};
+		case 'brown/green':
+			return {
+				backgroundColor1: '#5e3023',
+				backgroundColor2: '#0c623f',
 			};
 		default: //brown
 			return {
-				backgroundColor1: '#885533',
-				backgroundColor2: '#885533',
-				backgroundColor3: '#885533',
+				backgroundColor1: '#5e3023',
+				backgroundColor2: '#5e3023',
 			};
 	}
 };
 
-const createCostIcons = (iconDict) => {
-	if (!iconDict) iconDict={};
-	let icons = [];
-	switch(iconDict.any) {
-		case 0 : {
-			icons.push(<Icon key="0" name="zeroCard"/>);
-			break;
-		}
-		case 1: {
-			icons.push(<Icon key="0" name="oneCard"/>);
-			break;
-		}
-		case 2: {
-			icons.push(<Icon key="0" name="twoCard"/>);
-			break;
-		}
-		default: {}
-	};
-	Object.keys(iconDict).forEach((key, index)=>{
-		if (key==='any') return;
-		for(let value = iconDict[key]; value > 0; value-=1) {
-			icons.push(<Icon key={index+1} name={key} border/>);
-		}
-	});
-	return icons;
-};
+
 
 const createIcons = (iconNames) => {
 	let icons = [];
 	if (!iconNames) return [];
 	iconNames.forEach((value, index)=>{
-		icons.push(<Icon key={index} name={value} border/>);
+		icons.push(<Icon medium key={index} name={value} border/>);
 	});
 	return icons;
 };
@@ -283,10 +385,16 @@ const createRequirements = (iconNames) => {
 
 const generateBody = (body) => {
 	if (!body) return [];
-	return body.map((row)=>{
-		return row.split(/(@[^\s]*)|(__.*?__)/g).filter(entry=>entry).map((entry, index)=>{
-			if (entry.match(/^@.*$/g)) {
-				return(<span key={index} style={{fontSize: '28px'}}>&nbsp;<Icon small name={entry.replace(/^@/,'')} border/>&nbsp;</span>);
+	return body.map((row)=> {
+		let newRow = row.split(/(\s?@[a-zA-Z]*\s?)|(__.*?__)|(:)|(‘)|(’)/g).filter(entry=>entry).map((entry, index)=>{
+			if (entry.match(/@[a-zA-Z]*/g)) {
+				return(<span key={index} style={{fontSize: '28px'}}>&nbsp;<Icon small name={entry.replace(/[^\w]/g,'')} border/>&nbsp;</span>);
+			}
+			else if (entry.match(/:/)) {
+				return(<span key={index} style={{fontSize: '40px'}}>{entry}</span>);
+			}
+			else if (entry.match(/(‘)|(’)/)) {
+				return(<span key={index} style={{fontSize: '36px',fontWeight: '500'}}>{entry}</span>);
 			}
 			else if (entry.match(/(__.*?__)/g)) {
 				return(<span key={index} style={{fontWeight: '600', fontSize: '32px'}}>{entry.replace(/__/g,'')}</span>);
@@ -295,6 +403,10 @@ const generateBody = (body) => {
 				return(<span key={index} style={{fontSize: '28px'}}>{entry}</span>);
 			};
 		});
+
+		newRow.isChild = row.match(/@child/);
+
+		return newRow;
 	});
 };
 
@@ -302,29 +414,34 @@ const CardInternal = React.memo((props) => {
 	const [cardColors] = useState(getColors(props.color));
 	cardColors.textBarColor = getBarColor(props.barColor);
 	return(
-		<CardContainer {...cardColors}>
+		<CardContainer {...cardColors} hasShadow={props.hasShadow}>
+			<CardBackgroundLeft {...cardColors}/>
+			<CardSeparator {...cardColors}/>
+			<CardBackgroundRight {...cardColors}/>
 			<CardBorder/>
 			<CardArt {...cardColors}>
 				<ImageLoader name={props.artName} tags={createLargeIcons(props.tags)}>
 				</ImageLoader>
 			</CardArt>
 			<CardHeader {...cardColors}>
-				<CostMarker>
-					{createCostIcons(props.cost)}
-				</CostMarker>
-				<HeaderRowContainer>
+				{props.cost &&
+					<CostMarker>
+						{createCostIcons(props.cost)}
+					</CostMarker>
+				}
+				<HeaderRowContainer cost={!props.cost}>
 					<NameHeaderEntry {...cardColors}>
 						{props.name || 'Untitled Card'}
 					</NameHeaderEntry>
 					<HeaderEntry larger {...cardColors}>
-						<Icon name="range"/>
+						<Icon medium name="range"/>
 						<Spacer/>
 						<RangeContainer>
 							{props.range}
 						</RangeContainer>
 					</HeaderEntry>
 					<HeaderEntry larger {...cardColors}>
-						<Icon name="tag"/>
+						<Icon medium name="tag"/>
 						<Spacer/>
 						{createIcons(props.tags)}
 					</HeaderEntry>
@@ -334,18 +451,20 @@ const CardInternal = React.memo((props) => {
 				{generateBody(props.body).map((entry, index) => {
 					if (index === props.body.length-1) {
 						return(
-							<CardTextLine key={index}>
+							<CardTextLine key={index} child={entry.isChild}>
 								<div>
 									{entry.map((bit, index)=>{
 										return bit;
 									})}
-									<div style={{overflow: 'hidden', verticalAlign: 'middle', visibility: 'hidden', display: 'inline-block', height: '52px', marginRight: '-106px'}}>
-										<CardIconBackdrop {...cardColors} noAbsolute>
-											<HeaderEntry {...cardColors}>
-												<Icon small name='lock'/>
-												<Spacer/>
-												{createRequirements(props.requirements)}
-											</HeaderEntry>
+									<div style={{overflow: 'hidden', verticalAlign: 'middle', visibility: 'hidden', display: 'inline-block', height: '1em', marginRight: '-102px'}}>
+										<CardIconBackdrop {...cardColors} noAbsolute columnCount={props.requirements?'2':'1'}>
+											{props.requirements 
+												&& <HeaderEntry {...cardColors}>
+													<Icon small name='lock'/>
+													<Spacer/>
+													{createRequirements(props.requirements)}
+												</HeaderEntry>
+											}
 											<HeaderEntry {...cardColors}>
 												<Icon small name="cardCopies"/>
 												<Spacer/>
@@ -359,7 +478,7 @@ const CardInternal = React.memo((props) => {
 					}
 					else {
 						return(
-							<CardTextLine key={index}>
+							<CardTextLine key={index} child={entry.isChild}>
 								<div>
 									{entry.map((bit, index)=>{
 										return bit;
@@ -370,12 +489,14 @@ const CardInternal = React.memo((props) => {
 					}
 				})}
 			</CardText>
-			<CardIconBackdrop {...cardColors}>
-				<HeaderEntry {...cardColors}>
-					<Icon small name='lock'/>
-					<Spacer/>
-					{createRequirements(props.requirements)}
-				</HeaderEntry>
+			<CardIconBackdrop {...cardColors} columnCount={props.requirements?'2':'1'}>
+				{props.requirements 
+					&& <HeaderEntry {...cardColors}>
+						<Icon small name='lock'/>
+						<Spacer/>
+						{createRequirements(props.requirements)}
+					</HeaderEntry>
+				}
 				<HeaderEntry {...cardColors}>
 					<Icon small name="cardCopies"/>
 					<Spacer/>

@@ -2,9 +2,11 @@ import React, {useState, useCallback} from 'react'
 
 import styled, {css} from 'styled-components'
 import Card from 'components/Card'
+import Delay from 'components/Delay'
+import { AnimatePresence, motion } from 'framer-motion'
 
 
-const CardDisplay = styled.div`
+const CardDisplay = styled(motion.div)`
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -13,7 +15,7 @@ const CardDisplay = styled.div`
     margin: 0px 0px 0px -20px;
 `;
 
-const CardEntry = styled.div`
+const CardEntry = styled(motion.div)`
     margin: 20px 0 0 20px;
     padding: 0;
     border: 0;
@@ -30,6 +32,23 @@ const CardEntry = styled.div`
     }}
     flex: 1;
 `;
+
+const Animator = styled(motion.div)`
+`;
+
+const item = (x) => ({
+    hidden: {
+        opacity: 0
+    },
+    show: { 
+        opacity: 1,
+        transition: {
+            delay: (.5*x)/(x**.5), 
+            duration:1,
+        } 
+    }
+});
+
 
 const CardRow = (props) => {
     //resize cards to fill screen correctly
@@ -51,18 +70,34 @@ const CardRow = (props) => {
     },0) - 1;
 
     return(
-        <CardDisplay>
-            {(props.cards||[]).map((card, index)=>{
-                return (
-                    <CardEntry key={card.key} ref={index===firstNonHidden?cardMeasure:null} hidden={card.hidden}>
-                        <Card {...card} width={scale}></Card>
-                    </CardEntry>
-                );
-            })}
-            <CardEntry/>
-            <CardEntry/>
-            <CardEntry/>
-        </CardDisplay>
+        <div>
+            {props.cards.length
+                ? <CardDisplay >
+                    {(props.cards).map((card, index)=>{
+                        return (
+                            <CardEntry
+                                key={card.key}
+                                initial="hidden"
+                                animate="show"
+                                hidden={card.hidden}
+                                variants={item(index)}
+                            >
+                                <div style={{
+                                    width: '100%',
+                                    height: '100%',
+                                }} ref={index===firstNonHidden?cardMeasure:null}>
+                                    <Card {...card} width={scale} noAutoScaling hasShadow></Card>
+                                </div>
+                            </CardEntry>
+                        );
+                    })}
+                    <CardEntry/>
+                    <CardEntry/>
+                    <CardEntry/>
+                </CardDisplay>
+                : null
+            }
+        </div>
     );
 };
 

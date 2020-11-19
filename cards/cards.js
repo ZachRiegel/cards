@@ -4,7 +4,6 @@ let cards = {
   ==========*/
   flameLance: {
     color: 'red',
-    name: 'Flame Lance',
     cost: {
       any: 1,
     },
@@ -13,10 +12,23 @@ let cards = {
       'rangedAttack',
       'fireSkill'
     ],
-    body: [
-      `Make a ranged spell attack against target creature's armor defense.`,
-      `@child On a hit, deal 8 + @spellcastingModifier fire damage.`,
-    ],
+    body: `
+      makeAttackAgainst({
+        type: spell,
+        range: ranged,
+        defense: armor,
+      });
+      targetEntity({
+        range: range(1-2),
+      });
+      onHit();
+      deal();
+		damage({
+        fire: add(8, ref(spellcastingModifier))
+      });
+      end();
+      end();
+    `,
     requirements: {
       fireSkill: 1,
     },
@@ -25,7 +37,6 @@ let cards = {
   },
   incendiaryBurst: {
     color: 'red',
-    name: 'Incendiary Burst',
     cost: {
       any: 1,
     },
@@ -33,11 +44,31 @@ let cards = {
     tags: [
       'fireSkill',
     ],
-    body: [
-      `Make a spell attack against each creature's motoric defense in target zone.`,
-      `@child On a hit, deal 2 + @spellcastingModifier damage.`,
-      `Place a @fireSkill token in the targeted zone.`,
-    ],
+    body: `
+        makeAttackAgainst({
+            type: spell,
+            defense: motorics,
+        });
+        entityIn({
+            noObjects: true,
+            limit: 0,
+        });
+        targetZone({
+            range: range(1, 2),
+        });
+        onHit();
+        deal();
+		damage({
+            fire: add(2, ref(spellcastingModifier)),
+        });
+        end();
+        affect();
+        placeTokens({
+            tokenType: fire,
+        });
+        end();
+        end();
+    `,
     requirements: {
       fireSkill: 1,
     },
@@ -46,7 +77,6 @@ let cards = {
   },
   fieryGrasp: {
     color: 'red',
-    name: 'Fiery Grasp',
     cost: {
       any: 1,
     },
@@ -55,11 +85,28 @@ let cards = {
       'meleeAttack',
       'fireSkill',
     ],
-    body: [
-      `Make a melee spell attack against target creature's motoric defense.`,
-      `@child On a hit, deal 4 + @spellcastingModifier fire damage.`,
-      `@child If a creature took damage from this, set smouldering 3 on it.`,
-    ],
+    body: `
+      makeAttackAgainst({
+        range: melee,
+        type: spell,
+        defense: motorics,
+      });
+      targetEntity({
+        noObjects: true,
+        range: range(0),
+      });
+      onHit();
+      deal();
+		damage({
+        fire: add(4, ref(spellcastingModifier)),
+      });
+      ifDamaged({});
+      set({
+        smouldering: 3,
+      });
+      end();
+      end();
+    `,
     requirements: {
       fireSkill: 1,
     },
@@ -68,18 +115,31 @@ let cards = {
   },
   innerFire: {
     color: 'red',
-    name: 'Inner Fire',
     cost: {
-      any: 1,
+        any: 1,
     },
     range: '0-1',
     tags: [
-      'fireSkill',
+        'fireSkill',
     ],
-    body: [
-      `Clear slowed, wet, fatigued, and dazed from yourself or target creature.`,
-      `The targeted creature may also draw a card.`,
-    ],
+    body: `
+        affect();
+        targetEntity({
+            noObjects: true,
+            range: range(0,1),
+        });
+        clear({
+            slowed: true,
+            drenched: true,
+            fatigued: true,
+            dazed: true,
+        });
+        end();
+        affect();
+        draw({});
+        end();
+        end();
+    `,
     requirements: {
       fireSkill: 1,
     },
@@ -88,7 +148,6 @@ let cards = {
   },
   heatWave: {
     color: 'red',
-    name: 'Heat Wave',
     cost: {
       any: 1,
       fire: 1,
@@ -97,12 +156,40 @@ let cards = {
     tags: [
       'fireSkill',
     ],
-    body: [
-      `__Requires__: An equipped staff.`,
-      `Make a spell attack against any number of target creatures' motorics defense.`,
-      `@child On a hit, deal @spellcastingModifier fire damage.`,
-      `You may place a @fireSkill token in up to three target zones.`,
-    ],
+    body: `
+        requires();
+        self();
+        equipped();
+        itemByType({
+            type: staff,
+        });
+        newContext();
+        makeAttackAgainst({
+            type: spell,
+            defense: motorics,
+        });
+        targetEntity({
+            noObjects: true,
+            limit: 0,
+            range: range(0 ,1),
+        });
+        onHit();
+        deal();
+		damage({
+            fire: ref(spellcastingModifier),
+        });
+        end();
+        newContext();
+        affect();
+        targetZone({
+            limit: 3,
+        });
+        placeTokens({
+            tokenType: fire,
+        });
+        end();
+        end();
+    `,
     requirements: {
       fireSkill: 1,
     },
@@ -111,21 +198,45 @@ let cards = {
   },
   spark: {
     color: 'red',
-    name: 'Spark',
     cost: {
       any: 0,
     },
     range: '0-1',
-    tags: [,
+    tags: [
       `rangedAttack`,
       `fireSkill`,
     ],
-    body: [
-      `Target zone.`,
-      `@child You may make a spell attack against one creature's armor defense in the targeted zone.`,
-      `@child On a hit, deal @spellcastingModifier fire damage.`,
-      `You may replace up to one oil token in the targeted zone with a @fireSkill token.`,
-    ],
+    body: `
+        declareContext();
+        targetZone({
+            range: range(0,1),
+        });
+        splitContext();
+        entityIn({
+            limit: 1,
+        });
+        makeAttackAgainst({
+            type: spell,
+            range: ranged,
+            defense: armor,
+        });
+        onHit();
+        deal();
+		damage({
+            fire: ref(spellcastingModifier),
+        });
+        end();
+        end();
+        same();
+        affect();
+        replaceTokens({
+            limit: 1,
+            oldType: oil,
+            newType: fire,
+        });
+        end();
+        end();
+    `,
     requirements: {
       fireSkill: 1,
     },
@@ -137,7 +248,6 @@ let cards = {
   ==========*/
   windBolt: {
     color: 'white',
-    name: 'Wind Bolt',
     cost: {
       any: 1,
     },
@@ -146,11 +256,29 @@ let cards = {
       'rangedAttack',
       'airSkill'
     ],
-    body: [
-      `Make a ranged spell attack against target creature's armor defense.`,
-      `@child On a hit, deal 6 + @spellcastingModifier air damage.`,
-      `@child If a creature took damage from this, it must invert a card with the @rangedAttack tag.`,
-    ],
+    body: `
+        makeAttackAgainst({
+            type: spell,
+            range: ranged,
+            defense: armor,
+        });
+        targetEntity({
+            noObjects: true,
+            range: range(0, 1),
+        });
+        onHit();
+        deal();
+		damage({
+            air: add(6, ref(spellcastingModifier)),
+        });
+        ifDamaged({});
+        invert();
+        cardWithTag({
+            tags: rangedAttack,
+        });
+        end();
+        end();
+    `,
     requirements: {
       airSkill: 1,
     },
@@ -159,7 +287,6 @@ let cards = {
   },
   blowback: {
     color: 'white',
-    name: 'Blowback',
     cost: {
       any: 1,
     },
@@ -168,11 +295,31 @@ let cards = {
       'meleeAttack',
       'airSkill'
     ],
-    body: [
-      `Make a melee spell attack against target creature's physique defense.`,
-      `@child On a hit deal 2 + @spellcastingModifier air damage.`,
-      `You may shift 1 zone.`,
-    ],
+    body: `
+        makeAttackAgainst({
+            type: spell,
+            range: melee,
+            defense: physique,
+        });
+        targetEntity({
+            noObjects: true,
+            range: range(0),
+        });
+        onHit();
+        deal();
+		damage({
+            air: add(2, ref(spellcastingModifier)),
+        });
+        end();
+        newContext();
+        affect();
+        self();
+        shift({
+            distance: 1,
+        });
+        end();
+        end();
+    `,
     requirements: {
       airSkill: 1,
     },
@@ -181,7 +328,6 @@ let cards = {
   },
   knockdownBlasts: {
     color: 'white',
-    name: 'Knockdown Blasts',
     cost: {
       any: 2,
     },
@@ -190,11 +336,30 @@ let cards = {
       'rangedAttack',
       'airSkill',
     ],
-    body: [
-      `Make a spell attack roll against each of up to two target creatures' physique defense.`,
-      `@child On a hit deal @spellcastingModifier air damage.`,
-      `@child If a creature took damage from this, set dazed 1 and immobilized 1 on it.`,
-    ],
+    body: `
+        makeAttackAgainst({
+            type: spell,
+            range: ranged,
+            defense: physique,
+        });
+        targetEntity({
+            noObjects: true,
+            limit: 2,
+            range: range(1,2),
+        });
+        onHit();
+        deal();
+		damage({
+            air: ref(spellcastingModifier),
+        });
+        ifDamaged({});
+        set({
+            dazed: 1,
+            immobilized: 1,
+        });
+        end();
+        end();
+    `,
     requirements: {
       airSkill: 1,
     },
@@ -203,7 +368,6 @@ let cards = {
   },
   shiftingGust: {
     color: 'white',
-    name: 'Shifting Gust',
     cost: {
       any: 1,
     },
@@ -211,10 +375,22 @@ let cards = {
     tags: [
       'airSkill',
     ],
-    body: [
-      `You may shift yourself or target allied creature 1 zone.`,
-      `@child Remove one token from the targeted creature's zone.`,
-    ],
+    body: `
+        affect();
+        targetEntity({
+            range: range(0,1),
+            disposition: allied,
+            noObjects: true,
+        });
+        shift({
+            distance: 1,
+        });
+        end();
+        affect();
+        removeTokens({});
+        end();
+        end();
+    `,
     requirements: {
       airSkill: 1,
     },
@@ -223,7 +399,6 @@ let cards = {
   },
   silencingGust: {
     color: 'white',
-    name: 'Silencing Gust',
     cost: {
       air: 1,
     },
@@ -231,12 +406,33 @@ let cards = {
     tags: [
       'airSkill',
     ],
-    body: [
-      `__Requires__: An equipped staff.`,
-      `Make an attack against target creature's physique defense.`,
-      `@child On a hit, deal 7 + @spellcastingModifier air damage.`,
-      `@child If a creature took damage from this, it must invert a spell.`,
-    ],
+    body: `
+        requires({});
+        self();
+        equipped();
+        itemByType({
+            type: staff,
+        });
+        newContext();
+        makeAttackAgainst({
+            type: spell,
+            defense: physique,
+        });
+        targetEntity({
+            noObjects: true,
+            range: range(1, 2),
+        });
+        onHit();
+        deal();
+        damage({
+            air: add(7, ref(spellcastingModifier)),
+        });
+        ifDamaged({});
+        invert();
+        spell();
+        end();
+        end();
+    `,
     requirements: {
       airSkill: 1,
     },
@@ -245,7 +441,6 @@ let cards = {
   },
   disperse: {
     color: 'white',
-    name: 'Disperse',
     cost: {
       any: 0,
     },
@@ -253,9 +448,18 @@ let cards = {
     tags: [
       'airSkill',
     ],
-    body: [
-      `Remove all tokens besides @airSkill tokens from target zone.`,
-    ],
+    body: `
+        affect();
+        targetZone({
+            range: range(0,2),
+        });
+        removeTokens({
+            limit: 0,
+            excludeType: air,
+        });
+        end();
+        end();
+    `,
     requirements: {
       airSkill: 1,
     },
@@ -267,7 +471,6 @@ let cards = {
   ==========*/
   waterGun: {
     color: 'blue',
-    name: 'Water Gun',
     cost: {
       any: 1,
     },
@@ -276,11 +479,28 @@ let cards = {
       'rangedAttack',
       'waterSkill'
     ],
-    body: [
-      `Make a ranged spell attack against target creature's armor defense.`,
-      `@child On a hit, deal 6 + @spellcastingModifier water damage.`,
-      `Place a @waterSkill token in the targeted creature's zone.`,
-    ],
+    body: `
+        makeAttackAgainst({
+            type: spell,
+            range: ranged,
+            defense: armor,
+        });
+        targetEntity({
+            range: range(1, 2),
+        });
+        onHit();
+        deal();
+		damage({
+            water: add(6, ref(spellcastingModifier)),
+        });
+        end();
+        affect();
+        placeTokens({
+            tokenType: water,
+        });
+        end();
+        end();
+    `,
     requirements: {
       waterSkill: 1,
     },
@@ -289,7 +509,6 @@ let cards = {
   },
   chillTouch: {
     color: 'blue',
-    name: 'Chill Touch',
     cost: {
       any: 1,
     },
@@ -298,11 +517,32 @@ let cards = {
       'meleeAttack',
       'waterSkill',
     ],
-    body: [
-      `Make a melee spell attack against target creature's armor defense.`,
-      `@child On a hit, deal 2 + @spellcastingModifier water damage.`,
-      `@child If a creature took damage from this, set wet 3 and slowed 1 on it. In addition, it must discard a card.`,
-    ],
+    body: `
+        makeAttackAgainst({
+            type: spell,
+            range: melee,
+            defense: armor,
+        });
+        targetEntity({
+            range: range(0),
+        });
+        onHit();
+        deal();
+		damage({
+            water: add(2, ref(spellcastingModifier)),
+        });
+        ifDamaged({});
+        twoEffects();
+        set({
+            drenched: 3,
+            slowed: 1,
+        });
+        discard({
+            quantity: 1,
+        });
+        end();
+        end();
+    `,
     requirements: {
       waterSkill: 1,
     },
@@ -311,7 +551,6 @@ let cards = {
   },
   upswell: {
     color: 'blue',
-    name: 'Upswell',
     cost: {
       any: 1,
     },
@@ -319,11 +558,30 @@ let cards = {
     tags: [
       'waterSkill',
     ],
-    body: [
-      `Make a spell attack roll against each creature's motorics defense in target zone.`,
-      `@child On a hit, deal @spellcastingModifier damage.`,
-      `@child If a creature took damage from this, set wet 3 on it.`,
-    ],
+    body: `
+        makeAttackAgainst({
+            type: spell,
+            defense: motorics,
+        });
+        entityIn({
+            noObjects: true,
+            limit: 0,
+        });
+        targetZone({
+            range: range(1, 2),
+        });
+        onHit();
+        deal();
+		damage({
+            water: ref(spellcastingModifier),
+        });
+        ifDamaged({});
+        set({
+            drenched: 3,
+        });
+        end();
+        end();
+    `,
     requirements: {
       waterSkill: 1,
     },
@@ -332,7 +590,6 @@ let cards = {
   },
   soothingWaters: {
     color: 'blue',
-    name: 'Soothing Waters',
     cost: {
       any: 1,
     },
@@ -340,10 +597,23 @@ let cards = {
     tags: [
       'waterSkill',
     ],
-    body: [
-      `Restore 12 + @spellcastingModifier health to yourself or target creature.`,
-      `Clear smouldering on the targeted creature.`,
-    ],
+    body: `
+        affect();
+        targetEntity({
+            range: range(0,1),
+            noObjects: true,
+        });
+        restoreHealth({
+            quantity: add(12, ref(spellcastingModifier)),
+        });
+        end();
+        affect();
+        clear({
+            smouldering: true,
+        });
+        end();
+        end();
+    `,
     requirements: {
       waterSkill: 1,
     },
@@ -352,31 +622,58 @@ let cards = {
   },
   gush: {
     color: 'blue',
-    name: 'Gush',
     cost: {
       water: 1,
     },
-    range: '1-2',
+    range: '0-2',
     tags: [
       'waterSkill',
     ],
-    body: [
-      `__Requires__: An equipped staff.`,
-      `Target @waterSkill token and move it 1.`,
-      `@child You may make a spell attack against one creature's armor defense in the targeted @waterSkill token's zone.`,
-      `@child On a hit, deal 6 + @spellcastingModifier water damage.`,
-      `@child If a creature took damage from this effect, set impaired 1 on it.`,
-    ],
+    body: `
+        requires();
+        self();
+        equipped();
+        itemByType({
+            type: staff,
+        });
+        newContext();
+        affect();
+        targetToken({
+            type: water,
+            range: range(0,2),
+        });
+        move({
+            distance: 1,
+        });
+        end();
+        changeContext();
+        entityInRangeOf({
+            noObjects: true,
+        });
+        makeAttackAgainst({
+            type: spell,
+            defense: armor,
+        });
+        onHit();
+        deal();
+		damage({
+            water: add(6, ref(spellcastingModifier)),
+        });
+        ifDamaged({});
+        set({
+            dazed: 1,
+        });
+        end();
+        end();
+    `,
     requirements: {
       waterSkill: 1,
     },
     maxCopies: 3,
     artName: 'searingSpear',
-    devNote: 'weird',
-  },
+    },
   douse: {
     color: 'blue',
-    name: 'Douse',
     cost: {
       any: 0,
     },
@@ -384,9 +681,19 @@ let cards = {
     tags: [
       'waterSkill',
     ],
-    body: [
-      `Place a @waterSkill token in up to two target zones.`,
-    ],
+    body: `
+        affect();
+        targetZone({
+            limit: 2,
+            range: range(0,2),
+        });
+        placeTokens({
+            limit: 1,
+            tokenType: water,
+        });
+        end();
+        end();
+    `,
     requirements: {
       waterSkill: 1,
     },
@@ -398,7 +705,6 @@ let cards = {
   ==========*/
   vineWhip: {
     color: 'green',
-    name: 'Vine Whip',
     cost: {
       any: 1,
     },
@@ -407,11 +713,28 @@ let cards = {
       'meleeAttack',
       'earthSkill'
     ],
-    body: [
-      `Make a melee spell attack against target creature's armor defense.`,
-      `@child On a hit, deal 6 + @spellcastingModifier earth damage.`,
-      `@child If a creature took damage from this, it must invert a card with the @meleeAttack tag.`,
-    ],
+    body: `
+        makeAttackAgainst({
+            type: spell,
+            range: melee,
+            defense: armor,
+        });
+        targetEntity({
+            range: range(0,1),
+        });
+        onHit();
+        deal();
+		damage({
+            earth: add(6, ref(spellcastingModifier)),
+        });
+        ifDamaged({});
+        invert();
+        cardWithTag({
+            tags: meleeAttack,
+        });
+        end();
+        end();
+    `,
     requirements: {
       earthSkill: 1,
     },
@@ -420,7 +743,6 @@ let cards = {
   },
   stonefist:{
     color: 'green',
-    name: 'Stonefist',
     cost: {
       any: 1,
     },
@@ -429,11 +751,28 @@ let cards = {
       'meleeAttack',
       'earthSkill',
     ],
-    body: [
-      `Make a melee spell attack against target creature's armor defense.`,
-      `@child On a hit, deal 5 + @spellcastingModifier earth damage.`,
-      `@child If a creature took damage from this, set immobilized 1 on it.`,
-    ],
+    body: `
+        makeAttackAgainst({
+            type: spell,
+            range: melee,
+            defense: armor,
+        });
+        targetEntity({
+            range: range(0),
+            noObjects: true,
+        });
+        onHit();
+        deal();
+		damage({
+            earth: add(5, ref(spellcastingModifier)),
+        });
+        ifDamaged({});
+        set({
+            immobilized: 1,
+        });
+        end();
+        end();
+    `,
     requirements: {
       earthSkill: 1,
     },
@@ -442,7 +781,6 @@ let cards = {
   },
   sandspout: {
     color: 'green',
-    name: 'Sandspout',
     cost: {
       any: 1,
     },
@@ -451,10 +789,26 @@ let cards = {
       'rangedAttack',
       'earthSkill',
     ],
-    body: [
-      `Make a spell attack against each creatures' motorics defense in target zone.`,
-      `@child On a hit, set blinded 2 on the hit creature.`,
-    ],
+    body: `
+        makeAttackAgainst({
+            type: spell,
+            range: ranged,
+            defense: motorics,
+        });
+        entityIn({
+            limit: 0,
+            noObjects: true,
+        });
+        targetZone({
+            range: range(1, 2),
+        });
+        onHit();
+        set({
+            blinded: 2,
+        });
+        end();
+        end();
+    `,
     requirements: {
       earthSkill: 1,
     }, 
@@ -463,7 +817,6 @@ let cards = {
   },
   earthenArmor: {
     color: 'green',
-    name: 'Earthen Armor',
     cost: {
       any: 1,
     },
@@ -471,9 +824,24 @@ let cards = {
     tags: [
       'earthSkill',
     ],
-    body: [
-      `Set your or target creature's armor and physique defense dice to their maximum value. Set caked 3 on it as well.`,
-    ],
+    body: `
+        affect();
+        targetEntity({
+            range: range(0, 1),
+            noObjects: true,
+        });
+        maxDefense({
+            armor: true,
+            physique: true,
+        });
+        end();
+        affect();
+        set({
+            caked: 3,
+        });
+        end();
+        end();
+    `,
     requirements: {
       earthSkill: 1,
     },
@@ -482,7 +850,6 @@ let cards = {
   },
   gravelBarrage: {
     color: 'green',
-    name: 'Gravel Barrage',
     cost: {
       any: 1,
       earth: 1,
@@ -491,12 +858,38 @@ let cards = {
     tags: [
       'earthSkill',
     ],
-    body: [
-      `__Requires__: An equipped staff.`,
-      `Make an attack roll against target creature's armor defense.`,
-      `@child On a hit, deal 3 + @spellcastingModifier earth damage.`,
-      `You may repeat this process up to two more times.`,
-    ],
+    body: `
+        requires();
+        self();
+        equipped();
+        itemByType({
+            type: staff,
+        });
+        newContext();
+        repeatable();
+        noContext();
+        makeAttackAgainst({
+            type: spell,
+            range: ranged,
+            defense: armor,
+        });
+        targetEntity({
+            range: range(1,2),
+        });
+        onHit();
+        deal();
+		damage({
+            earth: add(3, ref(spellcastingModifier)),
+        });
+        end();
+        end();
+        repeat({
+            times: 2,
+        });
+        end();
+        end();
+        end();
+    `,
     requirements: {
       earthSkill: 1,
     },
@@ -505,7 +898,6 @@ let cards = {
   },
   oilSlick: {
     color: 'green',
-    name: 'Oil Slick',
     cost: {
       any: 0,
     },
@@ -513,11 +905,32 @@ let cards = {
     tags: [
       'earthSkill',
     ],
-    body: [
-      `Place an oil token in target zone.`,
-      `@child Make an attack roll against each creatures' motorics defense.`,
-      `@child On a hit, set impaired 1 and slowed 1 on the hit creature.`,
-    ],
+    body: `
+        affect();
+        targetZone({
+            range: range(1,2),
+        });
+        placeTokens({
+            tokenType: oil,
+        });
+        end();
+        changeContext();
+        entityIn({
+            limit: 0,
+            noObjects: true,
+        });
+        makeAttackAgainst({
+            type: spell,
+            defense: motorics,
+        });
+        onHit();
+        set({
+            impaired: 1,
+            slowed: 1,
+        });
+        end();
+        end();
+    `,
     requirements: {
       earthSkill: 1,
     },
@@ -529,7 +942,6 @@ let cards = {
   ==========*/
   battleTrance:{
     barColor: 'barbarianSkill',
-    name: 'Battle Trance',
     cost: {
       any: 1,
     },
@@ -537,10 +949,21 @@ let cards = {
     tags: [
       'barbarianSkill',
     ],
-    body: [
-      `__Buff__, self, 4 turns.`,
-      `While you are affected by this card, your physical resistance is increased by 5.`,
-    ],
+    body: `
+        affect();
+        self();
+        buff({
+            duration: 4,
+        });
+        end();
+        whileBuffed();
+        increaseResistances({
+            resistances: list(physical),
+            quantity: 5,
+        });
+        end();
+        end();
+    `,
     requirements: {
       barbarianSkill: 1,
     },
@@ -549,7 +972,6 @@ let cards = {
   },
   suddenReprisal: {
     barColor: 'barbarianSkill',
-    name: 'Sudden Reprisal',
     cost: {
       any: 0,
     },
@@ -557,11 +979,25 @@ let cards = {
     tags: [
       'barbarianSkill',
     ],
-    body: [
-      `__Reaction__: After the slowed, immobilized, impaired, or fatigued condition is set on you.`,
-      `__Buff__, self, 1 turns.`,
-      `While you are affected by this card, you have immunity to slowed, immobilized, impaired, and fatigued.`,
-    ],
+    body: `
+        affect();
+        self();
+        buff({
+            duration:1,
+        });
+        end();
+        whileBuffed();
+        conditionImmunity({
+            conditions: list(slowed, immobilized, enfeebled, fatigued),
+        });
+        end();
+        reaction();
+            onConditionSet({
+                conditions: list(slowed, immobilized, enfeebled, fatigued),
+            });
+            end();
+        end();
+    `,
     requirements: {
       barbarianSkill: 1,
     },
@@ -570,7 +1006,6 @@ let cards = {
   },
   bodySlam: {
     barColor: 'barbarianSkill',
-    name: 'Body Slam',
     cost: {
       any: 1,
     },
@@ -579,11 +1014,38 @@ let cards = {
       'meleeAttack',
       'barbarianSkill',
     ],
-    body: [
-      `Make a melee attack against target creature's armor defense.`,
-      `@child On a hit, deal @weaponModifier physical damage.`,
-      `@child If a creature took damage from this, set immobilized 1 and dazed 1 on it. If you are under the effects of a @barbarianSkill card, set impaired 1 on it as well.`,
-    ],
+    body: `
+        makeAttackAgainst({
+            type: weapon,
+            range: melee,
+            defense: armor,
+        });
+        targetEntity({
+            range: range(0),
+        });
+        onHit();
+        deal();
+        damage({
+            physical: ref(weaponModifier),
+        });
+        ifDamaged({});
+        set({
+            immobilized: 1,
+            dazed: 1,
+        });
+        additional();
+        changeContext();
+        toSelf();
+        areBuffedBy();
+        cardWithTag({
+            tags: barbarianSkill,
+        });
+        set({
+            enfeebled: 1,
+        });
+        end();
+        end();
+    `,
     requirements: {
       barbarianSkill: 1,
     },
@@ -592,7 +1054,6 @@ let cards = {
   },
   doubleStrike: {
     barColor: 'barbarianSkill',
-    name: 'Double Strike',
     cost: {
       any: 2,
     },
@@ -601,13 +1062,45 @@ let cards = {
       'meleeAttack',
       'barbarianSkill',
     ],
-    body: [
-      `__Requires__: Two weapons equipped`,
-      `Make a melee weapon attack against target creature's armor defense.`,
-      `@child On a hit, deal 4 + @weaponModifier damage.`,
-      `@child If a creature took damage from this attack and you are under the effects of a @barbarianSkill card, set dazed 1 on it.`,
-      `You may repeat this process once more.`,
-    ],
+    body: `
+        requires();
+        self();
+        dualWielding();
+        newContext();
+        repeatable();
+        noContext();
+        makeAttackAgainst({
+            type: weapon,
+            range: melee,
+            defense: armor,
+        });
+        targetEntity({
+            range: range(0),
+        });
+        onHit();
+        deal();
+        damage({
+            physical: add(4, ref(weaponModifier)),
+        });
+        ifDamagedAnd({});
+        changeContext();
+        toSelf();
+        areBuffedBy();
+        cardWithTag({
+            tags: barbarianSkill,
+        });
+        set({
+            dazed: 1,
+        });
+        end();
+        end();
+        repeat({
+            times: 1,
+        });
+        end();
+        end();
+        end();
+    `,
     requirements: {
       barbarianSkill: 1,
     },
@@ -616,7 +1109,6 @@ let cards = {
   },
   heavyBlow: {
     barColor: 'barbarianSkill',
-    name: 'Heavy Blow',
     cost: {
       any: 1,
     },  
@@ -625,10 +1117,34 @@ let cards = {
       'meleeAttack',
       'barbarianSkill',
     ],
-    body: [
-      `Make a melee weapon attack against target creature's armor defense.`,
-      `@child On a hit deal 6 + @weaponModifier physical damage. If you are under the effects of a @barbarianSkill card, deal 10 + @weaponModifier damage instead.`,
-    ],
+    body: `
+        makeAttackAgainst({
+            type: weapon,
+            range: melee,
+            defense: armor,
+        });
+        targetEntity({
+            range: range(0),
+        });
+        onHit();
+        instead();
+        changeContext();
+        toSelf();
+        areBuffedBy();
+        cardWithTag({
+            tags: barbarianSkill,
+        });
+        deal();
+        damage({
+            physical: add(6, ref(weaponModifier)),
+        });
+        deal();
+        damage({
+            physical: add(10, ref(weaponModifier)),
+        });
+        end();
+        end();
+    `,
     requirements: {
       barbarianSkill: 1,
     },
@@ -637,7 +1153,6 @@ let cards = {
   },
   cleave: {
     barColor: 'barbarianSkill',
-    name: 'Cleave',
     cost: {
       any: 2,
     },
@@ -646,11 +1161,42 @@ let cards = {
       'meleeAttack',
       'barbarianSkill',
     ],
-    body: [
-      `__Requires__: A two-handed melee weapon equipped`,
-      `Make a melee attack against up to two target creatures' armor defense.`,
-      `@child On a hit, deal 6 + @weaponModifier physical damage. If you are under the effects of a @barbarianSkill card, deal 12 + @weaponModifier physical damage instead.`,
-    ],
+    body: `
+        requires();
+        self();
+        equipped();
+        weaponWithProperties({
+            properties: list(two-handed, melee),
+        });
+        newContext();
+        makeAttackAgainst({
+            type: weapon,
+            range: melee,
+            defense: armor,
+        });
+        targetEntity({
+            limit: 2,
+            range: range(0),
+        });
+        onHit();
+        instead();
+        changeContext();
+        toSelf();
+        areBuffedBy();
+        cardWithTag({
+            tags: barbarianSkill,
+        });
+        deal();
+        damage({
+            physical: add(6, ref(weaponModifier)),
+        });
+        deal();
+		damage({
+            physical: add(12, ref(weaponModifier)),
+        });
+        end();
+        end();
+    `,
     requirements: {
       barbarianSkill: 1, 
     },
@@ -662,7 +1208,7 @@ let cards = {
   ==========*/
   rushingBlow: {
     barColor: 'barbarianSkill',
-    name: `Rushing Blow`,
+    color: 'brown/white',
     cost: {
       any: 1,
     },
@@ -672,11 +1218,40 @@ let cards = {
       'barbarianSkill',
       `airSkill`,
     ],
-    body: [
-      `Shift to target zone.`,
-      `@child You may make a melee weapon attack against one creature's armor defense in the targeted zone.`,
-      `@child On a hit, deal 4 + @weaponModifier physical damage. If you are under the effects of a @barbarianSkill card, deal an additional 5 air damage.`,
-    ],
+    body: `
+        affect();
+        targetZone({
+            range: range(0, 1),
+        });
+        shiftTo();
+        self();
+        end();
+        changeContext();
+        entityIn({});
+        makeAttackAgainst({
+            type: weapon,
+            range: melee,
+            defense: armor,
+        });
+        onHit();
+        deal();
+		damage({
+            physical: add(4, ref(weaponModifier)),
+        });
+        additional();
+        changeContext();
+        toSelf();
+        areBuffedBy();
+        cardWithTag({
+            tags: barbarianSkill,
+        });
+        deal();
+		damage({
+            air: 5,
+        });
+        end();
+        end();
+    `,
     requirements: {
       barbarianSkill: 1,
       airSkill: 1,
@@ -686,7 +1261,7 @@ let cards = {
   },
   airAttunement: {
     barColor: 'barbarianSkill',
-    name: `Air Attunement`,
+    color: 'brown/white',
     cost: {
       any: 1,
     },
@@ -695,11 +1270,26 @@ let cards = {
       'barbarianSkill',
       `airSkill`,
     ],
-    body: [
-      `__Buff__, self, 4 turns.`,
-      `While you are affected by this card, your air resistance is increased by 5.`,
-      `When you play this card, you may shift 1.`,
-    ],
+    body: `
+        affect();
+            self();
+            shift({
+                distance: 1,
+            });
+        end();
+        affect();
+        buff({
+            duration: 4,
+        });
+        end();
+        whileBuffed();
+        increaseResistances({
+            resistances: list(air),
+            quantity: 5,
+        });
+        end();
+        end();
+    `,
     requirements: {
       barbarianSkill: 1,
       airSkill: 1,
@@ -712,7 +1302,7 @@ let cards = {
   ==========*/
   chillingBlow: {
     barColor: 'barbarianSkill',
-    name: `Chilling Blow`,
+    color: 'brown/blue',
     cost: {
       any: 1,
     },
@@ -722,11 +1312,45 @@ let cards = {
       'barbarianSkill',
       `waterSkill`,
     ],
-    body: [
-      `Make a melee weapon attack against target creature's armor defense.`,
-      `@child On a hit, deal 4 + @weaponModifier physical damage. If you are under the effects of a @barbarianSkill card, deal an additional 5 water damage.`,
-      `@child If a creature took water damage from this, set slowed 1 on it. In addition, it must discard a card.`,
-    ],
+    body: `
+        makeAttackAgainst({
+            type: weapon,
+            range: melee,
+            defense: armor,
+        });
+        targetEntity({
+            range: range (0),
+            noObjects: true,
+        });
+        onHit();
+        deal();
+		damage({
+            physical: add(4, ref(weaponModifier)),
+        });
+        additional();
+        changeContext();
+        toSelf();
+        areBuffedBy();
+        cardWithTag({
+            tags: barbarianSkill,
+        });
+        deal();
+		damage({
+            water: 5,
+        });
+        ifDamaged({
+            type: water,
+        });
+        twoEffects();
+        set({
+            slowed: 1,
+        });
+        discard({
+            quantity: 1,
+        });
+        end();
+        end();
+    `,
     requirements: {
       barbarianSkill: 1,
       waterSkill: 1,
@@ -736,7 +1360,7 @@ let cards = {
   },
   waterAttunement: {
     barColor: 'barbarianSkill',
-    name: `Water Attunement`,
+    color: 'brown/blue',
     cost: {
       any: 1,
     },
@@ -745,11 +1369,26 @@ let cards = {
       'barbarianSkill',
       `waterSkill`,
     ],
-    body: [
-      `__Buff__, self, 4 turns.`,
-      `While you are affected by this card, your water resistance is increased by 5.`,
-      `When you play this card, restore @spellcastingModifier health.`,
-    ],
+    body: `
+        affect();
+        self();
+        restoreHealth({
+            quantity: ref(spellcastingModifier),
+        });
+        end();
+        affect();
+        buff({
+            duration: 4,
+        });
+        end();
+        whileBuffed();
+        increaseResistances({
+            resistances: list(water),
+            quantity: 5,
+        });
+        end();
+        end();
+    `,
     requirements: {
       barbarianSkill: 1,
       waterSkill: 1,
@@ -762,7 +1401,7 @@ let cards = {
   ==========*/
   searingBlow: {
     barColor: 'barbarianSkill',
-    name: `Searing Blow`,
+    color: 'brown/red',
     cost: {
       any: 1,
     },
@@ -772,11 +1411,41 @@ let cards = {
       'barbarianSkill',
       `fireSkill`,
     ],
-    body: [
-      `Make a melee weapon attack against target creature's armor defense.`,
-      `@child On a hit, deal 4 + @weaponModifier physical damage. If you are under the effects of a @barbarianSkill card, deal 5 fire damage to the hit creature.`,
-      `@child If a creature took damage from this effect, set smouldering 2 on it.`,
-    ],
+    body: `
+        makeAttackAgainst({
+            type: weapon,
+            range: melee,
+            defense: armor,
+        });
+        targetEntity({
+            range: range (0),
+            noObjects: true,
+        });
+        onHit();
+        deal();
+		damage({
+            physical: add(4, ref(weaponModifier)),
+        });
+        additional();
+        changeContext();
+        toSelf();
+        areBuffedBy();
+        cardWithTag({
+            tags: barbarianSkill,
+        });
+        deal();
+		damage({
+            fire: 5,
+        });
+        ifDamaged({
+            type: fire,
+        });
+        set({
+            smouldering: 1,
+        });
+        end();
+        end();
+    `,
     requirements: {
       barbarianSkill: 1,
       fireSkill: 1,
@@ -786,7 +1455,7 @@ let cards = {
   },
   fireAttunement: {
     barColor: 'barbarianSkill',
-    name: `Fire Attunement`,
+    color: 'brown/red',
     cost: {
       any: 1,
     },
@@ -795,12 +1464,38 @@ let cards = {
       'barbarianSkill',
       `fireSkill`,
     ],
-    body: [
-      `__Buff__, self, 4 turns.`,
-      `While you are affected by this card, your fire resistance is increased by 5.`,
-      `When you play this card, make an attack against each creatures' physique defense in target zone.`,
-      `On a hit, deal @spellcastingModifier fire damage.`
-    ],
+    body: `
+        makeAttackAgainst({
+            type: spell,
+            defense: physique,
+        });
+        entityIn({
+            limit: 0,
+            noObjects: true,
+            other: true,
+        });
+        self();
+        onHit();
+        deal();
+		damage({
+            fire: ref(spellcastingModifier),
+        });
+        end();
+        changeContext();
+        toSelf();
+        affect();
+        buff({
+            duration: 4,
+        });
+        end();
+        whileBuffed();
+        increaseResistances({
+            resistances: list(fire),
+            quantity: 5,
+        });
+        end();
+        end();
+    `,
     requirements: {
       barbarianSkill: 1,
       fireSkill: 1,
@@ -813,7 +1508,7 @@ let cards = {
   ==========*/
   leadenBlow: {
     barColor: 'barbarianSkill',
-    name: `Leaden Blow`,
+    color: 'brown/green',
     cost: {
       any: 1,
     },
@@ -823,11 +1518,41 @@ let cards = {
       'barbarianSkill',
       `earthSkill`,
     ],
-    body: [
-      `Make a melee weapon attack against target creature's armor defense.`,
-      `@child On a hit, deal 4 + @weaponModifier physical damage. If you are under the effects of a @barbarianSkill card, deal 5 earth damage to the hit creature.`,
-      `@child If a creature took damage from this effect, set impaired 1 on it.`,
-    ],
+    body: `
+        makeAttackAgainst({
+            type: weapon,
+            range: melee,
+            defense: armor,
+        });
+        targetEntity({
+            range: range (0),
+            noObjects: true,
+        });
+        onHit();
+        deal();
+		damage({
+            physical: add(4, ref(weaponModifier)),
+        });
+        additional();
+        changeContext();
+        toSelf();
+        areBuffedBy();
+        cardWithTag({
+            tags: barbarianSkill,
+        });
+        deal();
+		damage({
+            earth: 5,
+        });
+        ifDamaged({
+            type: earth,
+        });
+        set({
+            impaired: 1,
+        });
+        end();
+        end();
+    `,
     requirements: {
       barbarianSkill: 1,
       earthSkill: 1,
@@ -837,7 +1562,7 @@ let cards = {
   },
   earthAttunement: {
     barColor: 'barbarianSkill',
-    name: `Earth Attunement`,
+    color: 'brown/green',
     cost: {
       any: 1,
     },
@@ -846,11 +1571,27 @@ let cards = {
       'barbarianSkill',
       `earthSkill`,
     ],
-    body: [
-      `__Buff__, self, 4 turns.`,
-      `While you are affected by this card, your earth resistance is increased by 5.`,
-      `When you play this card, set your armor and physique defense dice to their maximum value.`,
-    ],
+    body: `
+        affect();
+        self();
+        maxDefense({
+            armor: true,
+            physique: true,
+        });
+        end();
+        affect();
+        buff({
+            duration: 4,
+        });
+        end();
+        whileBuffed();
+        increaseResistances({
+            resistances: list(earth),
+            quantity: 5,
+        });
+        end();
+        end();
+    `,
     requirements: {
       barbarianSkill: 1,
       earthSkill: 1,
@@ -861,9 +1602,8 @@ let cards = {
   /*==========
   Marksman cards
   ==========*/
-  marksmansShot: {
+  marksman_asShot: {
     barColor: 'marksmanSkill',
-    name: `Marksman's Shot`,
     cost: {
       any: 1,
     },
@@ -872,10 +1612,23 @@ let cards = {
       'rangedAttack',
       'marksmanSkill',
     ],
-    body: [
-      `Make a ranged attack against target creature's armor defense.`,
-      `@child On a hit, deal 6 + @weaponModifier physical damage.`,
-    ],
+    body: `
+        makeAttackAgainst({
+            type: weapon,
+            range: ranged,
+            defense: armor,
+        });
+        targetEntity({
+            range: range(1,2)
+        });
+        onHit();
+        deal();
+		damage({
+            physical: add(6, ref(weaponModifier)),
+        });
+        end();
+        end();
+    `,
     requirements: {
       marksmanSkill: 1,
     },
@@ -884,7 +1637,6 @@ let cards = {
   },
   arrowSpray: {
     barColor: 'marksmanSkill',
-    name: `Arrow Spray`,
     cost: {
       any: 2,
     },
@@ -893,10 +1645,27 @@ let cards = {
       'rangedAttack',
       'marksmanSkill',
     ],
-    body: [
-      `Make a ranged attack with disadvantage against each creatures' armor defense in target zone.`,
-      `@child On a hit, deal 8 + @weaponModifier damage.`,
-    ],
+    body: `
+        makeAttackAgainst({
+            type: weapon,
+            range: ranged,
+            defense: armor,
+            advantage: -1,
+        });
+        entityIn({
+            limit: 0,
+        });
+        targetZone({
+            range: range(1,2)
+        });
+        onHit();
+        deal();
+		damage({
+            physical: add(8, ref(weaponModifier)),
+        });
+        end();
+        end();
+    `,
     requirements: {
       marksmanSkill: 1,
     },
@@ -905,7 +1674,6 @@ let cards = {
   },
   carefulShot: {
     barColor: 'marksmanSkill',
-    name: `Careful Shot`,
     cost: {
       any: 1,
     },
@@ -914,12 +1682,35 @@ let cards = {
       'rangedAttack',
       'marksmanSkill',
     ],
-    body: [
-      `Choose one:`,
-      `@option __Quiver__: This attack gains a rank of advantage. If this attack deals damage, increase the damage dealt by 4.`,
-      `@option Make a ranged attack with advantage against target creature's armor defense.`,
-      `@child On a hit, deal 4 + @weaponModifier damage.`,
-    ],
+    body: `
+        chooseOne();
+        noContext();
+        quiver({
+            effectCount: 2,
+        });
+        modifyCard();
+        applyEffect();
+        advantage();
+        increaseAttackDamage({
+            by: 5,
+        });
+        makeAttackAgainst({
+            type: weapon,
+            range: ranged,
+            defense: armor,
+            advantage: 1,
+        });
+        targetEntity({
+            range: range(0-2),
+        });
+        onHit();
+        deal();
+        damage({
+            physical: ref(weaponModifier),
+        });
+        end();
+        end();
+    `,
     requirements: {
       marksmanSkill: 1,
     },
@@ -928,7 +1719,6 @@ let cards = {
   },
   calledShot: {
     barColor: 'marksmanSkill',
-    name: `Called Shot`,
     cost: {
       any: 1,
     },
@@ -937,21 +1727,43 @@ let cards = {
       'rangedAttack',
       'marksmanSkill',
     ],
-    body: [
-      `Choose one:`,
-      `@option __Quiver__: This attack gains a rank of disadvantage. If this attack deals damage, increase the damage dealt by 12.`,
-      `@option Make a ranged attack with disadvantage against target creature's armor defense.`,
-      `@child On a hit, deal 12 + @weaponModifier damage.`,
-    ],
+    body: `
+        chooseOne();
+        noContext();
+        quiver({
+            effectCount: 2,
+        });
+        modifyCard({});
+        applyEffect();
+        disadvantage();
+        increaseAttackDamage({
+            by: 12,
+        });
+        makeAttackAgainst({
+            type: weapon,
+            range: ranged,
+            defense: armor,
+            advantage: -1,
+        });
+        targetEntity({
+            range: range(0-2),
+        });
+        onHit();
+        deal();
+        damage({
+            physical: add(8, ref(weaponModifier)),
+        });
+        end();
+        end();
+    `,
     requirements: {
       marksmanSkill: 1,
-    },
+    }, 
     maxCopies: 3,
     artName: 'searingSpear',
   },
   barbedArrow: {
     barColor: 'marksmanSkill',
-    name: `Barbed Arrow`,
     cost: {
       any: 0,
     },
@@ -959,18 +1771,28 @@ let cards = {
     tags: [
       'marksmanSkill',
     ],
-    body: [
-      `__Quiver__: If a creature takes damage from this attack, set immobilized 1 and impaired 1 on it.`,
-    ],
+    body: `
+        quiver({
+            effectCount: 1,
+        });
+        modifyCard();
+        applyEffect();
+        ifDamaged({});
+        targetEntity({});
+        set({
+            immobilized: 1,
+            enfeebled: 1,
+        });
+        end();
+    `,
     requirements: {
       marksmanSkill: 1,
     },
     maxCopies: 3,
     artName: 'searingSpear',
   },
-  huntersStride: {
+  hunter_asStride: {
     barColor: 'marksmanSkill',
-    name: `Hunter's Stride`,
     cost: {
       any: 0,
     },
@@ -978,11 +1800,430 @@ let cards = {
     tags: [
       'marksmanSkill',
     ],
-    body: [
-      `Shift 1`,
-    ],
+    body: `
+        affect();
+        self();
+        shift({
+            distance: 1,
+        });
+        end();
+        end();
+    `,
     requirements: {
       marksmanSkill: 1,
+    },
+    maxCopies: 3, 
+    artName: 'searingSpear',
+  },
+  /*==========
+  Marksman cards / Aeromancer
+  ==========*/
+  curvingShot: {
+    barColor: 'marksmanSkill',
+    color: 'brown/white',
+    cost: {
+      air: 1,
+    },
+    range: '1-2',
+    tags: [
+      'rangedAttack',
+      'marksmanSkill',
+      'airSkill',
+    ],
+    body: `
+        makeAttackAgainst({
+            type: weapon,
+            range: ranged,
+            defense: armor,
+        });
+        targetEntity({
+            range: range(1,2),
+        });
+        onMiss();
+        redirect();
+        entityInRangeOf({
+            range: range(0,1),
+            other: true,
+        });
+        onHit();
+        deal();
+        damage({
+            physical: ref(weaponModifier),
+            air: 6,
+        });
+        end();
+        end();
+    `,
+    requirements: {
+      marksmanSkill: 1,
+      airSkill: 1,
+    },
+    maxCopies: 3, 
+    artName: 'searingSpear',
+  },
+  quickShot: {
+    barColor: 'marksmanSkill',
+    color: 'brown/white',
+    cost: {
+      any: 0,
+    },
+    range: '0-1',
+    tags: [
+      'rangedAttack',
+      'marksmanSkill',
+      'airSkill',
+    ],
+    body: `
+        makeAttackAgainst({
+            type: weapon,
+            range: ranged,
+            defense: armor,
+        });
+        targetEntity({
+            range: range(0, 1),
+        });
+        onHit();
+        deal();
+		damage({
+            physical: ref(weaponModifier),
+        });
+        end();
+        end();
+    `,
+    requirements: {
+      marksmanSkill: 1,
+      airSkill: 1,
+    },
+    maxCopies: 3, 
+    artName: 'searingSpear',
+  },
+  /*==========
+  Marksman cards / Hydromancer
+  ==========*/
+  vampiricShot: {
+    barColor: 'marksmanSkill',
+    color: 'brown/blue',
+    cost: {
+      water: 1,
+    },
+    range: '1-2',
+    tags: [
+      'rangedAttack',
+      'marksmanSkill',
+      'waterSkill',
+    ], 
+    body: `
+        chooseOne();
+        noContext();
+        quiver({
+            effectCount: 2,
+        });
+        increaseAttackDamage({
+            by: 5,
+            type: water,
+        });
+        modifyCard();
+        applyEffect();
+        ifDamaged({});
+        targetEntity({
+            noObjects: true,
+        });
+        lifesteal({
+            type: water,
+        });
+        self();
+        end();
+        makeAttackAgainst({
+            type: weapon,
+            range: ranged,
+            defense: armor,
+        });
+        targetEntity({
+            range: range(0-2),
+        });
+        onHit();
+        deal();
+        damage({
+            physical: ref(weaponModifier),
+            water: 5,
+        });
+        ifDamaged({});
+        lifesteal({
+            type: water,
+        });
+        self();
+        end();
+        end();
+    `,
+    requirements: {
+      marksmanSkill: 1,
+      waterSkill: 1,
+    },
+    maxCopies: 3, 
+    artName: 'searingSpear',
+  },
+  waterArrow: {
+    barColor: 'marksmanSkill',
+    color: 'brown/blue',
+    cost: {
+      water: 1,
+    },
+    range: '1-2',
+    tags: [
+      'rangedAttack',
+      'marksmanSkill',
+      'waterSkill',
+    ], 
+    body: `
+        chooseOne();
+        noContext();
+        quiver({
+            effectCount: 1,
+        });
+        convertDamage({
+            toType: water,
+            increaseBy: 5,
+        });
+        makeAttackAgainst({
+            type: weapon,
+            range: ranged,
+            defense: armor,
+        });
+        targetEntity({
+            range: range(1, 2),
+        });
+        onHit();
+        deal();
+        damage({
+            water: add(6, ref(weaponModifier)),
+        });
+        end();
+        end();
+    `,
+    requirements: {
+      marksmanSkill: 1,
+      waterSkill: 1,
+    },
+    maxCopies: 3, 
+    artName: 'searingSpear',
+  },
+  /*==========
+  Marksman cards / Pyromancer
+  ==========*/
+  incendiaryArrow: {
+    barColor: 'marksmanSkill',
+    color: 'brown/red',
+    cost: {
+      fire: 1,
+    },
+    range: '1-2',
+    tags: [
+      'rangedAttack',
+      'marksmanSkill',
+      'fireSkill',
+    ], 
+    body: `
+        chooseOne();
+        noContext();
+        quiver({
+            effectCount: 2,
+        });
+        increaseAttackDamage({
+            type: fire,
+            by: 8,
+        });
+        modifyCard();
+        applyEffect();
+        ifDamaged({
+            type: fire,
+        });
+        targetEntity({});
+        set({
+            smouldering: 2,
+        });
+        end();
+        makeAttackAgainst({
+            type: weapon,
+            range: ranged,
+            defense: armor,
+        });
+        targetEntity({
+            range: range(1-2),
+        });
+        onHit();
+        deal();
+        damage({
+            physical: add(3, ref(weaponModifier)),
+            fire: 6,
+        });
+        ifDamaged({});
+        set({
+            smouldering: 2,
+        });
+        end();
+        end();
+    `,
+    requirements: {
+      marksmanSkill: 1,
+      fireSkill: 1,
+    },
+    maxCopies: 3, 
+    artName: 'searingSpear',
+  },
+  sparkingArrows: {
+    barColor: 'marksmanSkill',
+    color: 'brown/red',
+    cost: {
+      any: 0,
+    },
+    range: '0',
+    tags: [
+      'marksmanSkill',
+      'fireSkill',
+    ], 
+    body: `
+        affect();
+            self();
+            buff({
+                duration: 3,
+            });
+        end();
+        whileBuffed();
+            modifyCards();
+            cardWithTag({
+                tags: rangedAttack,
+                limit: 0,
+            });
+            applyEffect();
+            ifDamagedAnd({
+                type: physical,
+            });
+            targetEntity({
+                noObjects: true,
+            });
+            lucky({
+                proc: 1,
+                per: 3,
+            });
+            deal();
+            damage({
+                fire: 9,
+            });
+            end();
+        end();
+        end();
+    `,
+    requirements: {
+      marksmanSkill: 1,
+      fireSkill: 1,
+    },
+    maxCopies: 3, 
+    artName: 'searingSpear',
+  },
+  /*==========
+  Marksman cards / Geomancer
+  ==========*/
+  obsidianArrow: {
+    barColor: 'marksmanSkill',
+    color: 'brown/green',
+    cost: {
+      any: 1,
+    },
+    range: '1-2',
+    tags: [
+      'marksmanSkill',
+      'earthSkill',
+    ], 
+    body: `
+        chooseOne();
+        noContext();
+        quiver({
+            effectCount: 2,
+        });
+        increaseAttackDamage({
+            type: earth,
+            by: 4,
+        });
+        modifyCard();
+        applyEffect();
+        ifDamaged({
+            type: earth
+        });
+        targetEntity({
+            noObjects: true
+        });
+        set({
+            bleed: 5,
+        });
+        end();
+        makeAttackAgainst({
+            type: weapon,
+            range: ranged,
+            defense: armor,
+        });
+        targetEntity({
+            range: range(1, 2),
+            noObjects: true,
+        });
+        onHit();
+        deal();
+        damage({
+            physical: add(2, ref(weaponModifier)),
+            earth: 4,
+        });
+        ifDamaged({
+            type: earth,
+        });
+        set({
+            bleed: 3,
+        });
+        end();
+        end();
+    `,
+    requirements: {
+      marksmanSkill: 1,
+      earthSkill: 1,
+    },
+    maxCopies: 3, 
+    artName: 'searingSpear',
+  },
+  digIn: {
+    barColor: 'marksmanSkill',
+    color: 'brown/green',
+    cost: {
+      earth: 1,
+    },
+    range: '0',
+    tags: [
+      'marksmanSkill',
+      'earthSkill',
+    ], 
+    body: `
+        affect();
+            self();
+            set({
+                immobilized: 2,
+            });
+        end();
+        affect();
+            buff({
+                duration: 2,
+            });
+        end();
+        whileBuffedAnd();
+        areAffectedByConditions({
+            conditions: immobilized,
+        });
+        defenseBonus({
+            bonus: 2,
+            against: ranged,
+        });
+        end();
+        end();
+    `,
+    requirements: {
+      marksmanSkill: 1,
+      earthSkill: 1,
     },
     maxCopies: 3, 
     artName: 'searingSpear',
@@ -992,7 +2233,6 @@ let cards = {
   ==========*/
   rakishAssault: {
     barColor: 'swashbuckler',
-    name: `Rakish Assault`,
     cost: {
       any: 1,
     },
@@ -1001,11 +2241,37 @@ let cards = {
       'meleeAttack',
       'swashbucklerSkill',
     ],
-    body: [
-      `__Flourish__ 0`,
-      `Make an attack roll against target creature.`,
-      `@child On a hit, deal 3 + @weaponModifier damage. If you flourished, deal 8 + @weaponModifier instead.`,
-    ],
+    body: `
+        flourish({
+            cost: 0,
+        });
+        self();
+        end();
+        newContext();
+        makeAttackAgainst({
+            type: weapon,
+            range: melee,
+            defense: armor,
+        });
+        targetEntity({
+            range: range(0),
+        });
+        onHit();
+        instead();
+        changeContext();
+        toSelf();
+        flourished();
+        deal();
+        damage({
+            physical: add(3, ref(weaponModifier)),
+        });
+        deal();
+        damage({
+            physical: add(8, ref(weaponModifier)),
+        });
+        end();
+        end();
+    `,
     requirements: {
       swashbucklerSkill: 1,
     },
@@ -1014,7 +2280,6 @@ let cards = {
   },
   flurry: {
     barColor: `swashbuckler`,
-    name: `Flurry`,
     cost: {
       any: 2,
     },
@@ -1023,13 +2288,42 @@ let cards = {
       'meleeAttack',
       'swashbucklerSkill',
     ],
-    body: [
-      `__Requires__: Two weapons equipped`,
-      `__Flourish__ 2`,
-      `Make an attack roll against target creature.`,
-      `@child On a hit, deal 3 + @weaponModifier damage.`,
-      `You may repeat this process once. If you flourished, repeat it twice instead.`,
-    ],
+    body: `
+        requires();
+        self();
+        dualWielding();
+        flourish({
+            cost: 2,
+        });
+        end();
+        repeatable();
+        newContext();
+        makeAttackAgainst({
+            type: weapon,
+            range: melee,
+            defense: armor,
+        });
+        targetEntity({
+            range: range(0),
+        });
+        onHit();
+        deal();
+        damage({
+            physical: add(3, ref(weaponModifier)),
+        });
+        end();
+        end();
+        instead();
+        flourished();
+        repeat({
+            times: 1,
+        });
+        repeat({
+            times: 2,
+        });
+        end();
+        end();
+    `,
     requirements: {
       swashbucklerSkill: 1,
     },
@@ -1038,44 +2332,106 @@ let cards = {
   },
   knifeThrow: {
     barColor: `swashbuckler`,
-    name: `Knife Throw`,
     cost: {
       any: 0,
     },
-    range: '1',
+    range: '0-1',
     tags: [
       'rangedAttack',
       'swashbucklerSkill',
     ],
-    body: [
-      `Make an attack roll against target creature.`,
-      `@child On a hit, deal 3 + @weaponModifier damage.`,
-      `Exhaust.`,
-    ],
+    body: `
+        makeAttackAgainst({
+            type: weapon,
+            range: ranged,
+            defense: armor,
+        });
+        targetEntity({
+            range: range(0-1),
+        });
+        onHit();
+        deal();
+        damage({
+            physical: add(3, ref(weaponModifier)),
+        });
+        end();
+        exhaust();
+        end();
+    `,
     requirements: {
       swashbucklerSkill: 1,
     },
     maxCopies: 3,
     artName: 'searingSpear',
   },
-  parryRiposte: {
+  parry_sRiposte: {
     barColor: `swashbuckler`,
-    name: `Parry / Riposte`,
     cost: {
       any: 1,
     },
-    range: '0',
+    range: '0-3',
     tags: [
       'meleeAttack',
       'swashbucklerSkill',
     ],
-    body: [
-      `__Reaction-only__: When a creature would hit you with a melee attack against your armor defense.`,
-      `__Flourish__ 1`,
-      `Redetermine if the triggering attack would hit, treating your armor defense die as a 5.`,
-      `If you flourished and the triggering attack missed, you may make an attack roll against the attacking creature's armor defense, if it is range.`,
-      `@child On a hit, deal 11 + @weaponModifier physical damage.`,
-    ],
+    body: `
+        flourish({
+            cost: 2,
+        });
+        self();
+        end();
+
+        newContext();
+
+        reaction();
+        attacking({
+            attackType: melee,
+            defenseType: armor,
+        });
+        targetEntity({
+            noObjects: true,
+            range: range(0 ,3),
+        });
+        hits();
+        self();
+        end();
+
+        splitContext();
+        toSelf();
+        asChild();
+        affect();
+        ward();
+        end();
+        end();
+        same();
+
+        asChild();
+        conditional({
+            conditionCount: 2,
+        });
+
+        changeContext();
+        toSelf();
+        flourished();
+
+        isInRangeOf({
+            range: range(0),
+        });
+        self();
+
+        makeAttackAgainst({
+            type: weapon,
+            range: melee,
+            defense: armor,
+        });
+        onHit();
+        deal();
+        damage({
+            physical: add(5, ref(weaponModifier)),
+        });
+        end();
+        end();
+    `,
     requirements: {
       swashbucklerSkill: 1,
     },
@@ -1084,7 +2440,6 @@ let cards = {
   },
   envenomedBlade: {
     barColor: `swashbuckler`,
-    name: `Envenomed Blade`,
     cost: {
       any: 1,
     },
@@ -1093,11 +2448,31 @@ let cards = {
       'meleeAttack',
       'swashbucklerSkill',
     ],
-    body: [
-      `Make an attack roll against target creature's armor defense.`,
-      `@child On a hit deal 2 + @weaponModifier damage.`,
-      `@child If a creature took damage from this, set impaired 1 on it and bleed 3.`,
-    ],
+    body: `
+        makeAttackAgainst({
+            type: weapon,
+            range: melee,
+            defense: armor,
+        });
+        targetEntity({
+            noObjects: true,
+        });
+        onHit();
+        deal();
+        damage({
+            physical: ref(weaponModifier),
+            poison: 2,
+        });
+        ifDamaged({
+            type: poison,
+        });
+        set({
+            enfeebled: 1,
+            poisoned: 3,
+        });
+        end();
+        end();
+    `,
     requirements: {
       swashbucklerSkill: 1,
     },
@@ -1106,7 +2481,6 @@ let cards = {
   },
   harry: {
     barColor: `swashbuckler`,
-    name: `Harry`,
     cost: {
       any: 1,
     },
@@ -1115,14 +2489,60 @@ let cards = {
       'meleeAttack',
       'swashbucklerSkill',
     ],
-    body: [
-      `__Reaction__: When a creature provokes an opportunity attack.`,
-      `__Flourish__ 2. If you flourished draw a card.`,
-      `If this card was played as a reaction, make an attack roll against the triggering creature's armor defense, if it is in range.`,
-      `@child On a hit, deal 8 + @weaponModifier damage.`,
-      `If this card was played on your turn, make an attack roll against target creature's armor defense.`,
-      `@child On a hit, deal 3 + @weaponModifier damage.`,
-    ],
+    body: `
+        flourish({
+            cost: 2,
+        });
+        self();
+        conditional({});
+        flourished();
+        draw({});
+
+        newContext();
+
+        reaction();
+        moving();
+        targetEntity({
+            noObjects: true,
+            range: range(0),
+        });
+        provokesOpportunity();
+        self();
+        end();
+
+        asChild();
+        makeAttackAgainst({
+            type: weapon,
+            range: melee,
+            defense: armor,
+        });
+        onHit();
+        deal();
+        damage({
+            physical: add(8, ref(weaponModifier)),
+        });
+        end();
+
+        otherwise();
+        newContext();
+
+        makeAttackAgainst({
+            type: weapon,
+            range: melee,
+            defense: armor,
+        });
+        targetEntity({
+            noObjects: true,
+            range: range(0),
+        });
+        onHit();
+        deal();
+        damage({
+            physical: add(3, ref(weaponModifier)),
+        });
+        end();
+        end();
+    `,
     requirements: {
       swashbucklerSkill: 1,
     },
@@ -1130,11 +2550,453 @@ let cards = {
     artName: 'searingSpear',
   },
   /*==========
+  Swashbuckler / Aeromancer cards
+  ==========*/
+  forcedPull_sPush: {
+    color: 'brown/white',
+    barColor: `swashbuckler`,
+    cost: {
+      air: 1,
+    },
+    range: '0-1',
+    tags: [ 
+      'rangedAttack',
+      'swashbucklerSkill',
+      'airSkill',
+    ],
+    body: `
+        flourish({
+        cost: 1,
+        });
+        self();
+        end();
+
+        chooseOne();
+        makeAttackAgainst({
+            type: spell,
+            defense: physique,
+        });
+            targetEntity({
+                range: range(0,1),
+            });
+            onHit();
+            pull({
+                distance: 1,
+            });
+            self();
+            additional();
+            changeContext();
+            toSelf();
+            flourished();
+            deal();
+            damage({
+                physical: ref(weaponModifier),
+            });
+        end();
+        end();
+
+        makeAttackAgainst({
+        type: spell,
+        defense: physique,
+        });
+        targetEntity({
+            range: range(0,1),
+        });
+        onHit();
+        push({
+            distance: 1,
+        });
+        self();
+        changeContext();
+        toSelf();
+        asChild();
+        conditional();
+            flourished();
+            affect();
+            shift({});
+            end();
+        end();
+        end();
+    `,
+    requirements: {
+      swashbucklerSkill: 1,
+      airSkill: 1,
+    },
+    maxCopies: 3, 
+    artName: 'searingSpear',
+  },
+  whirlwindSlash: {
+    color: 'brown/white',
+    cost: {
+      any: 1,
+    },
+    range: '0',
+    tags: [ 
+      'meleeAttack',
+      'swashbucklerSkill',
+      'airSkill',
+    ],
+    body: `
+        flourish({
+            cost: 2,
+        });
+        self();
+        end();
+
+        newContext();
+
+        affect();
+        targetEntity({
+            range: range(0),
+        });
+        instead();
+        changeContext();
+        toSelf();
+        flourished();
+        makeAttackAgainst({
+            type: weapon,
+            range: melee,
+            defense: armor,
+        });
+        end();
+        end();
+        newContext();
+        makeAttackAgainst({
+            type: weapon,
+            range: melee,
+            defense: armor,
+        });
+        targetEntity({
+            range: range(0),
+            limit: 0,
+        });
+        end();
+        end();
+        onHit();
+        deal();
+        damage({
+            physical: ref(weaponModifier),
+            air: 5,
+        });
+        end();
+        end();
+    `,
+    requirements: {
+      swashbucklerSkill: 1,
+      airSkill: 1,
+    },
+    maxCopies: 3,
+    artName: 'searingSpear',
+  },
+  /*==========
+  Swashbuckler / Hydromancer cards
+  ==========*/
+  bitingSteel: {
+    color: 'brown/blue',
+    cost: {
+      any: 1,
+    },
+    range: '0',
+    tags: [ 
+      'meleeAttack',
+      'swashbucklerSkill',
+      'waterSkill',
+    ],
+    body: `
+        flourish({
+            cost: 0,
+        });
+        self();
+        end();
+
+        newContext();
+
+        makeAttackAgainst({
+            type: weapon,
+            range: melee,
+            defense: armor,
+        });
+        targetEntity({
+            range: range(0),
+        });
+        onHit();
+        deal();
+        damage({
+            physical: ref(weaponModifier),
+            water: 4,
+        });
+        ifDamagedAnd({
+            type: water,
+        });
+        changeContext();
+        toSelf();
+        flourished();
+        set({
+            slowed: 1,
+            impaired: 1,
+        });
+        end();
+        end();
+    `,
+    requirements: {
+      swashbucklerSkill: 1,
+      waterSkill: 1,
+    },
+    maxCopies: 3,
+    artName: 'searingSpear',
+  },
+  iceKnife: {
+    color: 'brown/blue',
+    cost: {
+      water: 1,
+    },
+    range: '0-1',
+    tags: [ 
+      'rangedAttack',
+      'swashbucklerSkill',
+      'waterSkill',
+    ],
+    body: `
+        makeAttackAgainst({
+            type: weapon,
+            range: ranged,
+            defense: armor,
+        });
+        targetEntity({
+            range: range(0, 1),
+        });
+        onHit();
+        deal();
+        damage({
+            water: add(5, ref(weaponModifier)),
+        });
+        end();
+        affect();
+        placeTokens({
+            tokenType: water,
+        });
+        end();
+        end();
+    `,
+    requirements: {
+      swashbucklerSkill: 1,
+      waterSkill: 1,
+    },
+    maxCopies: 3,
+    artName: 'searingSpear',
+  },
+  /*==========
+  Swashbuckler / Pyromancer cards
+  ==========*/
+  brilliantSlash: {
+    color: 'brown/red',
+    cost: {
+      any: 1,
+    },
+    range: '0',
+    tags: [
+      'meleeAttack',
+      'swashbucklerSkill',
+      'fireSkill',
+    ],
+    body: `
+        flourish({
+            cost: 1,
+        });
+        self();
+        end();
+
+        newContext();
+
+        makeAttackAgainst({
+            type: weapon,
+            range: melee,
+            defense: armor,
+        });
+        targetEntity({
+            range: range(0),
+        });
+        onHit();
+        deal();
+        damage({
+            physical: add(4, ref(weaponModifier)),
+        });
+        additional();
+        changeContext();
+        toSelf();
+        flourished();
+        deal();
+        damage({
+            fire: 4,
+        });
+        ifDamaged({
+            type: fire,
+        });
+        set({
+            blind: 1,
+        });
+        end();
+        end();
+    `,
+    requirements: {
+      swashbucklerSkill: 1,
+      fireSkill: 1,
+    },
+    maxCopies: 3,
+    artName: 'searingSpear',
+  },
+  grenado: {
+    color: 'brown/red',
+    cost: {
+      fire: 1,
+    },
+    range: '0-1',
+    tags: [
+      'rangedAttack',
+      'swashbucklerSkill',
+      'fireSkill',
+    ],
+    body: `
+        makeAttackAgainst({
+            type: weapon,
+            range: ranged,
+            defense: motorics,
+        });
+        entityIn({
+            limit: 0,
+        });
+        targetZone({
+            range: range(0, 1),
+        });
+        onHit();
+        deal();
+        damage({
+            physical: add(2, ref(weaponModifier)),
+            fire: 8,
+        });
+        end();
+        exhaust();
+        end();
+    `,
+    requirements: {
+      swashbucklerSkill: 1,
+      fireSkill: 1,
+    },
+    maxCopies: 3,
+    artName: 'searingSpear',
+  },
+  /*==========
+  Swashbuckler / Geomancer cards
+  ==========*/
+  jaggedEdge: {
+    color: 'brown/green',
+    cost: {
+      any: 1,
+    },
+    range: '0',
+    tags: [
+      'meleeAttack',
+      'swashbucklerSkill',
+      'earthSkill',
+    ],
+    body: `
+        flourish({
+            cost: 1,
+        });
+        self();
+        end();
+        newContext();
+        makeAttackAgainst({
+            type: weapon,
+            range: melee,
+            defense: armor,
+        });
+        targetEntity({
+            range: range(0),
+        });
+        onHit();
+        deal();
+        damage({
+            physical: ref(weaponModifier),
+            earth: 5,
+        });
+        ifDamagedAnd({
+            type: earth,
+        });
+        changeContext();
+        toSelf();
+        flourished();
+        set({
+            bleed: 4,
+        });
+        end();
+        end();
+    `,
+    requirements: {
+      swashbucklerSkill: 1,
+      earthSkill: 1,
+    },
+    maxCopies: 3,
+    artName: 'searingSpear',
+  },
+  createPitTrap: {
+    color: 'brown/green',
+    cost: {
+      earth: 1,
+    },
+    range: '0',
+    tags: [
+      'meleeAttack',
+      'swashbucklerSkill',
+      'earthSkill',
+    ],
+    body: `
+        flourish();
+            self();
+        end();
+
+        newContext();
+
+        reaction();
+            moving();
+            targetEntity({
+                noObjects: true,
+                range: range(0),
+            });
+            entersZoneOf();
+            self();
+        end();
+
+        asChild();
+        makeAttackAgainst({
+            type: spell,
+            defense: motorics,
+        });
+            onHit();
+            deal();
+            damage({
+                physical: add(6, ref(spellcastingModifier)),
+            });
+            ifDamaged();
+            set({
+                immobilized: 1,
+                caked: 3,
+            });
+        end();
+        end();
+    `,
+    requirements: {
+      swashbucklerSkill: 1,
+      earthSkill: 1,
+    },
+    maxCopies: 3,
+    artName: 'searingSpear',
+  },
+  /*==========
   Legionnaire cards
   ==========*/
   guardedThrust: {
     barColor: 'legionnaire',
-    name: 'Guarded Thrust',
     cost: {
       any: 1,
     },
@@ -1143,21 +3005,65 @@ let cards = {
       'meleeAttack',
       'legionnaireSkill',
     ],
-    body: [
-      `Make a melee attack against target creature's armor defense.`,
-      `@child On a hit, deal 5 + @weaponModifier physical damage.`,
-      `__Followthrough__ X: When you are dealt damage by an attack that targeted your armor, physique or motorics defense.`,
-      `@child Reduce the triggering damage by 5 * X.`,
-    ],
+    body: `
+        makeAttackAgainst({
+            type: weapon,
+            range: melee,
+            defense: armor,
+        });
+        targetEntity({
+            range: range(0),
+        });
+        onHit();
+        deal();
+        damage({
+            physical: add(5, ref(weaponModifier)),
+        });
+        end();
+        newContext();
+        affect();
+        self();
+        plan({
+            cards: cardName(block),
+        });
+        end();
+        end();
+    `,
     requirements: {
       legionnaireSkill: 1,
     },
     maxCopies: 3,
     artName: 'searingSpear',
   },
+  block: {
+    range: '0',
+    tags: [
+      'legionnaireSkill',
+    ],
+    body: `
+        enact({
+            hasX: true,
+        });
+        defending({
+            attackType: weapon,
+            defenseType: list(armor, physique, motorics),
+        });
+        self();
+        whenDamaged();
+        end();
+        asChild();
+            affect();
+            reduceDamageTaken({
+                by: add(multiply(5, ref(X)), 5),
+            });
+        end();
+        end();
+    `,
+    maxCopies: 0,
+    artName: 'searingSpear',
+  },
   relentlessStrikes: {
     barColor: 'legionnaire',
-    name: 'Relentless Strikes',
     cost: {
       any: 1,
     },
@@ -1166,14 +3072,56 @@ let cards = {
       'meleeAttack',
       'legionnaireSkill',
     ],
-    body: [
-      `Make a melee weapon attack against target creature's armor defense.`,
-      `@child On a hit, deal 4 + @weaponModifier physical damage.`,
-      `__Followthrough__ X: When a creature provokes an opportunity attack.`,
-      `@child You may make a melee weapon attack against the triggering creature's armor defense, if it is in range.`,
-      `@child On a hit, deal (4 * X) + @weaponModifier physical damage.`,
-      `@child You may shift 1.`,
-    ],
+    body: `
+        makeAttackAgainst({
+            type: weapon,
+            range: melee,
+            defense: armor,
+        });
+        targetEntity({
+            range: range(0),
+        });
+        onHit();
+        deal();
+        damage({
+            physical: add(4, ref(weaponModifier)),
+        });
+        end();
+        newContext();
+        followthrough({
+            hasX: true,
+        });
+        moving();
+        targetEntity({
+            noObjects: true,
+            hasX: true,
+            range: range(0),
+        });
+        provokesOpportunity();
+        self();
+
+        asChild();
+        makeAttackAgainst({
+            type: weapon,
+            defense: armor,
+            range: melee,
+        });
+        onHit();
+        deal();
+        damage({
+            physical: add(multiply(4, ref(X)), ref(weaponModifier)),
+        });
+        end();
+        asChild();
+        affect();
+        shiftTo({
+            distance: 1,
+        });
+        self();
+        end();
+        end();
+        end();
+    `,
     requirements: {
       legionnaireSkill: 1,
     },
@@ -1182,7 +3130,6 @@ let cards = {
   },
   persistentGuard: {
     barColor: 'legionnaire',
-    name: 'Persistent Guard',
     cost: {
       any: 0,
     },
@@ -1190,11 +3137,31 @@ let cards = {
     tags: [
       'legionnaireSkill',
     ],
-    body: [
-      `__Defend__ 1.`,
-      `__Followthrough__: After you roll a defense die.`,
-      `@child __Defend__ 1.`,
-    ],
+    body: `
+        affect();
+            self();
+            defend({});
+        end();
+        affect();
+            plan({
+                cards: cardName(persistentGuard),
+            });
+        end();
+        enact();
+            afterDefenseDieRolled({});
+        end();
+        asChild();
+        affect();
+            defend({});
+        end();
+        asChild();
+        affect();
+            plan({
+                cards: cardName(persistentGuard),
+            });
+        end();
+    end();
+    `,
     requirements: {
       legionnaireSkill: 1,
     },
@@ -1203,7 +3170,6 @@ let cards = {
   },
   standfast: {
     barColor: 'legionnaire',
-    name: 'Standfast',
     cost: {
       any: 1,
     },
@@ -1212,13 +3178,43 @@ let cards = {
       'meleeAttack',
       'legionnaireSkill',
     ],
-    body: [
-      `__Requires__: An equipped two-handed weapon.`,
-      `__Defend__ 1.`,
-      `__Followthrough__ X: When a hostile creature moves or is pushed into your zone.`,
-      `@child Make an melee attack against the triggering creature's armor defense.`,
-      `@child On a hit, deal (7 * X) + @weaponModifier physical damage.`,
-    ],
+    body: `
+        requires();
+        self();
+        equipped();
+        weaponWithProperties({
+            properties: list(two-handed),
+        });
+        affect();
+        defend();
+        end();
+        newContext();
+        followthrough({
+            hasX: true,
+        });
+        moving();
+        targetEntity({
+            noObjects: true,
+            range: range(0),
+        });
+        entersZoneOf();
+        self();
+
+        asChild();
+        makeAttackAgainst({
+            type: weapon,
+            range: melee,
+            defense: armor,
+        });
+        onHit();
+        deal();
+        damage({
+            physical: add(multiply(7, ref(X)), ref(weaponModifier)),
+        });
+        end();
+        end();
+        end();
+    `,
     requirements: {
       legionnaireSkill: 1,
     },
@@ -1227,7 +3223,6 @@ let cards = {
   },
   driveBack: {
     barColor: 'legionnaire',
-    name: 'Drive Back',
     cost: {
       any: 1,
     },
@@ -1236,13 +3231,39 @@ let cards = {
       'meleeAttack',
       'legionnaireSkill',
     ],
-    body: [
-      `__Requires__: An equipped shield.`,
-      `Make a melee weapon attack against target creature's physique defense.`,
-      `@child On a hit, deal 2 + @weaponModifier physical damage.`,
-      `@child If a creature took damage from this effect, push them 1.`,
-      `@child If you chose to push a creature you may shift 1 towards them.`,
-    ],
+    body: `
+        requires();
+        self();
+        equipped();
+        itemByType({
+            type: shield,
+        });
+        newContext();
+        makeAttackAgainst({
+            type: weapon,
+            range: melee,
+            defense: physique,
+        });
+        targetEntity({
+            range: range(0),
+        });
+        onHit();
+        deal();
+        damage({
+            physical: add(2, ref(weaponModifier)),
+        });
+        ifDamaged({});
+        push({});
+        self();
+        end();
+        affect();
+        shiftTo({
+            distance: 1,
+        });
+        self();
+        end();
+        end();
+    `,
     requirements: {
       legionnaireSkill: 1,
     },
@@ -1251,20 +3272,1216 @@ let cards = {
   },
   regroup: {
     barColor: 'legionnaire',
-    name: 'Regroup',
+    cost: {
+      any: 1,
+    },
+    range: '0-1',
+    tags: [
+      'legionnaireSkill',
+    ],
+    body: `
+        affect();
+        targetEntity({
+            disposition: allied,
+            limit: 2,
+            noObjects: true,
+            range: range(0, 1),
+        });
+        move({
+            forced: true,
+        });
+        end();
+        affect();
+        defend({});
+        end();
+        end();
+    `,
+    requirements: {
+      legionnaireSkill: 1,
+    },
+    maxCopies: 3,
+    artName: 'searingSpear',
+  },
+  /*==========
+  Legionnaire cards / Aeromancer
+  ==========*/
+  deflectingGust: {
+    color: 'brown/white',
+    cost: {
+      air: 1,
+    },
+    range: '0-3',
+    tags: [
+      'legionnaireSkill',
+      'airSkill',
+    ],
+    body: `
+        reaction();
+        attacking({
+            attackType: ranged,
+            defenseType: list(armor, physique, motorics)
+        });
+        targetEntity({
+            noObjects: true,
+            range: range(0 ,3),
+        });
+        hits();
+        self();
+        end();
+
+        asChild();
+        affect();
+        redirect();
+        forceContext();
+        entityInRangeOf({
+            noObjects: true,
+            range: range(0, 1),
+        });
+        self();
+        end();
+        end();
+        end();
+    `,
+    requirements: {
+      legionnaireSkill: 1,
+      airSkill: 1,
+    },
+    maxCopies: 3,
+    artName: 'searingSpear',
+  },
+  warmagic_cBreeze: {
+    color: 'brown/white',
     cost: {
       any: 1,
     },
     range: '0',
     tags: [
       'legionnaireSkill',
+      'airSkill',
+      'meleeAttack',
     ],
-    body: [
-      `You and up to one other target allied creature may move 1.`,
-      `@child If a creature used this movement, it may __defend__ 1.`,
-    ],
+    body: `
+        makeAttackAgainst({
+            type: weapon,
+            defense: armor,
+            range: melee,
+        });
+        targetEntity({
+            noObjects: true,
+            range: range(0),
+        });
+        onHit();
+        deal();
+        damage({
+            physical: ref(weaponModifier),
+            air: 8,
+        });
+        end();
+        newContext();
+        affect();
+        self();
+        plan({
+            cards: list(cardName(windborneStride), cardName(quell)),
+        });
+        end();
+        end();
+    `,
     requirements: {
       legionnaireSkill: 1,
+      airSkill: 1,
+    },
+    maxCopies: 3,
+    artName: 'searingSpear',
+  },
+  windborneStride: {
+    color: 'brown/white',
+    range: '0',
+    tags: [
+      'legionnaireSkill',
+      'airSkill',
+    ],
+    body: `
+        enact();
+        self();
+        beforeNextTurn();
+        end();
+        asChild();
+        affect();
+        shift({
+            distance: 1,
+        });
+        end();
+        end();
+    `,
+    maxCopies: 0,
+    artName: 'searingSpear',
+  },
+  quell: {
+    color: 'brown/white',
+    range: '0',
+    tags: [
+      'legionnaireSkill',
+      'airSkill',
+    ],
+    body: `
+        enact();
+        self();
+        endOfTurn();
+        end();
+        asChild();
+        affect();
+        removeTokens({
+            limit: ref(X),
+        });
+        end();
+        end();
+    `,
+    maxCopies: 0,
+    artName: 'searingSpear',
+  },
+  /*==========
+  Legionnaire cards / Hydromancer
+  ==========*/
+  warmagic_cPond: {
+    color: 'brown/blue',
+    cost: {
+      any: 1,
+    },
+    range: '0',
+    tags: [
+      'legionnaireSkill',
+      'waterSkill',
+      'meleeAttack',
+    ],
+    body: `
+        makeAttackAgainst({
+            type: weapon,
+            defense: armor,
+            range: melee,
+        });
+        targetEntity({
+            noObjects: true,
+            range: range(0),
+        });
+        onHit();
+        twoEffects();
+        deal();
+        damage({
+            physical: ref(weaponModifier),
+            water: 6,
+        });
+        prime();
+        end();
+        newContext();
+        affect();
+        self();
+        plan({
+            cards: list(cardName(healingBalm), cardName(cleanse)),
+        });
+        end();
+        end();
+    `,
+    requirements: {
+      legionnaireSkill: 1,
+      waterSkill: 1,
+    },
+    maxCopies: 3,
+    artName: 'searingSpear',
+  },
+  healingBalm: {
+    color: 'brown/blue',
+    range: '0',
+    tags: [
+      'legionnaireSkill',
+      'waterSkill',
+    ],
+    body: `
+        enact();
+        self();
+        beforeNextTurn();
+        end();
+        asChild();
+        affect();
+        restoreHealth({
+            quantity: multiply(4, ref(X)),
+        });
+        end();
+        end();
+    `,
+    maxCopies: 0,
+    artName: 'searingSpear',
+  },
+  cleanse: {
+    color: 'brown/blue',
+    range: '0',
+    tags: [
+      'legionnaireSkill',
+      'waterSkill',
+    ],
+    body: `
+        enact();
+        self();
+        endOfTurn();
+        end();
+        asChild();
+        newContext();
+        affect();
+        primed({
+            by: cardName(warmagic_cPond),
+        });
+        targetEntity({
+            range: 0,
+            noObjects: true,
+        });
+        clearEffects({
+            quantity: 1,
+        });
+        end();
+        end();
+    `,
+    maxCopies: 0,
+    artName: 'searingSpear',
+  },
+  mantleOfDew: {
+    color: 'brown/blue',
+    cost: {
+      water: 1,
+    },
+    range: '0',
+    tags: [
+      'legionnaireSkill',
+      'waterSkill',
+    ],
+    body: `
+        requires();
+        self();
+        equipped();
+        itemByType({
+            type: shield,
+        });
+        affect();
+        set({
+            drenched: 4
+        });
+        end();
+        affect();
+        buff({
+            duration: 4,
+        });
+        end();
+        whileBuffedAnd();
+        areAffectedByConditions({
+            conditions: drenched,
+        });
+        increaseResistances({
+            resistances: list(physical, fire),
+            quantity: 5,
+        });
+        end();
+        end();
+    `,
+    requirements: {
+      legionnaireSkill: 1,
+      waterSkill: 1,
+    },
+    maxCopies: 3,
+    artName: 'searingSpear',
+  },
+  /* ===========
+  Legionnaire / Pyromancer Cards
+  ========== */
+  rebukingFlames: {
+    color: 'brown/red',
+    cost: {
+      fire: 1,
+    },
+    range: '0',
+    tags: [
+      'legionnaireSkill',
+      'fireSkill',
+    ],
+    body: `
+        affect();
+        self();
+        clear({
+            slowed: true,
+            drenched: true,
+            fatigued: true,
+            dazed: true,
+        });
+        end();
+        affect();
+        set({
+            smouldering: 3,
+        });
+        end();
+        affect();
+        plan({
+            cards: cardName(fieryRebuke),
+        });
+        end();
+        end();
+    `,
+    requirements: {
+      legionnaireSkill: 1,
+      fireSkill: 1,
+    },
+    maxCopies: 3,
+    artName: 'searingSpear',
+  },
+  fieryRebuke: {
+    color: 'brown/red',
+    range: '0',
+    tags: [
+      'legionnaireSkill',
+      'fireSkill',
+    ],
+    body: `
+        enact({
+            hasX: true,
+        });
+        attacking({
+            attackType: melee,
+            defenseType: list(armor, physique, motorics),
+        });
+        targetEntity({
+            noObjects: true,
+            range: range(0),
+        });
+        hits();
+        self();
+        end();
+        asChild();
+        affect();
+        deal();
+        damage({
+            fire: add(multiply(3, ref(X)), ref(spellcastingModifier)),
+        });
+        end();
+        end();
+    `,
+    maxCopies: 0,
+    artName: 'searingSpear',
+  },
+  warmagic_cEmber: {
+    color: 'brown/red',
+    cost: {
+      any: 1,
+    },
+    range: '0',
+    tags: [
+      'legionnaireSkill',
+      'fireSkill',
+    ],
+    body: `
+        makeAttackAgainst({
+            type: weapon,
+            defense: armor,
+            range: melee,
+        });
+        targetEntity({
+            noObjects: true,
+            range: range(0),
+        });
+        onHit();
+        twoEffects();
+        deal();
+        damage({
+            physical: ref(weaponModifier),
+        });
+        prime();
+        end();
+        newContext();
+        affect();
+        self();
+        plan({
+            cards: list(cardName(detonate), cardName(rousingFlames)),
+        });
+        end();
+        end();
+    `,
+    requirements: {
+      legionnaireSkill: 1,
+      fireSkill: 1,
+    },
+    maxCopies: 3,
+    artName: 'searingSpear',
+  },
+  detonate: {
+    color: 'brown/red',
+    range: '0',
+    tags: [
+      'legionnaireSkill',
+      'fireSkill',
+    ],
+    body: `
+        enact({
+            hasX: true,
+        });
+        self();
+        endOfTurn();
+        end();
+        asChild();
+        changeTargetTo();
+        primed({
+            by: cardName(warmagic_cEmber),
+        });
+        targetEntity({
+            noObjects: true,
+            range: range(0),
+        });
+        affect();
+        deal();
+        damage({
+            fire: multiply(6, ref(X)),
+        });
+        end();
+        end();
+    `,
+    maxCopies: 0,
+    artName: 'searingSpear',
+  },
+  rousingFlames: {
+    color: 'brown/red',
+    range: '0',
+    tags: [
+      'legionnaireSkill',
+      'fireSkill',
+    ],
+    body: `
+        enact({
+            hasX: true,
+        });
+        self();
+        beforeNextTurn();
+        end();
+        asChild();
+        affect();
+        draw({
+            zone: reserves,
+        });
+        end();
+        end();
+    `,
+    maxCopies: 0,
+    artName: 'searingSpear',
+  },
+  /* ===========
+  Legionnaire / Geomancer Cards
+  ========== */
+  warmagic_cCopse: {
+    color: 'brown/green',
+    cost: {
+      any: 1,
+    },
+    range: '0',
+    tags: [
+      'meleeAttack',
+      'legionnaireSkill',
+      'earthSkill',
+    ],
+    body: `
+        makeAttackAgainst({
+            type: weapon,
+            defense: armor,
+            range: melee,
+        });
+        targetEntity({
+            noObjects: true,
+            range: range(0),
+        });
+        onHit();
+        twoEffects();
+        deal();
+        damage({
+            physical: ref(weaponModifier),
+        });
+        prime();
+        end();
+        newContext();
+        affect();
+        self();
+        plan({
+            cards: list(cardName(briarthorn), cardName(gnarledHide)),
+        });
+        end();
+        end();
+    `,
+    requirements: {
+      legionnaireSkill: 1,
+      earthSkill: 1,
+    },
+    maxCopies: 3,
+    artName: 'searingSpear',
+  },
+  briarthorn: {
+    color: 'brown/green',
+    range: '0',
+    tags: [
+      'legionnaireSkill',
+      'earthSkill',
+    ],
+    body: `
+        enact({
+            hasX: true,
+        });
+        self();
+        endOfTurn();
+        end();
+        asChild();
+        changeTargetTo();
+        primed({
+            by: cardName(warmagic_cCopse),
+        });
+        targetEntity({
+            noObjects: true,
+            range: range(0),
+        });
+        affect();
+        deal();
+        damage({
+            earth: multiply(3, ref(X)),
+        });
+        ifDamaged({
+            type: earth,
+        });
+        set({
+            bleed: 3,
+        });
+        end();
+        end();
+    `,
+    maxCopies: 0,
+    artName: 'searingSpear',
+  },
+  gnarledHide: {
+    color: 'brown/green',
+    range: '0',
+    tags: [
+      'legionnaireSkill',
+      'earthSkill',
+    ],
+    body: `
+        enact({
+            hasX: true,
+        });
+        self();
+        beforeNextTurn();
+        end();
+        asChild();
+        affect();
+        maxDefense({
+            armor: true,
+            physique: true,
+        });
+        end();
+        end();
+    `,
+    maxCopies: 0,
+    artName: 'searingSpear',
+  },
+  pitch: {
+    color: 'brown/green',
+    cost: {
+      earth: 1,
+    },
+    range: '0-1',
+    tags: [
+      'legionnaireSkill',
+      'earthSkill',
+    ],
+    body: `
+        makeAttackAgainst({
+            type: spell,
+            defense: motorics,
+            range: ranged,
+        });
+        targetEntity({
+            noObjects: true,
+            range: range(0, 1),
+        });
+        onHit();
+        deal();
+        damage({
+            earth: add(7, ref(spellcastingModifier)),
+        });
+        ifDamaged({
+            type: earth,
+        });
+        set({
+            tarred: 3,
+            slowed: 1,
+            impaired: 1,
+        });
+        end();
+        end();
+    `,
+    requirements: {
+      legionnaireSkill: 1,
+      earthSkill: 1,
+    },
+    maxCopies: 3,
+    artName: 'searingSpear',
+  },
+  /* ===========
+  Aeromancer / Hydromancer Cards
+  ========== */
+  chillWind: {
+    color: 'white/blue',
+    cost: {
+      air: 1,
+      water: 1,
+    },
+    range: '0-3',
+    tags: [
+      'airSkill',
+      'waterSkill',
+    ],
+    body: `
+        declareContext();
+        targetContiguousZones({
+            range: range(0, 3),
+            limit: 3,
+        });
+        splitContext();
+        entityIn({
+            noObjects: true,
+            limit: 0,
+        });
+        makeAttackAgainst({
+            type: spell,
+            defense: physique,
+        });
+        onHit();
+        deal();
+        damage({
+            ice: add(2, ref(spellcastingModifier)),
+        });
+        ifDamaged({
+            type: ice,
+        });
+        twoEffects();
+        set({
+            slowed: 1,
+            impaired: 1,
+        });
+        discard({
+            quantity: 1,
+        });
+        end();
+        end();
+        eachOf();
+        affect();
+        replaceTokens({
+            oldType: water,
+            newType: ice,
+            limit: 1,
+        });
+        end();
+        end();
+    `,
+    requirements: {
+      airSkill: 1,
+      waterSkill: 1,
+    },
+    maxCopies: 3,
+    artName: 'searingSpear',
+  },
+  mistyEscape: {
+    color: 'white/blue',
+    cost: {
+      any: 0,
+    },
+    range: '0-3',
+    tags: [
+      'airSkill',
+      'waterSkill',
+    ],
+    body: `
+        reaction();
+        attacking();
+        targetEntity({
+            noObjects: true,
+            range: range(0 ,3),
+        });
+        hits();
+        self();
+        end();
+        newContext();
+        affect();
+        entityInRangeOf({
+            noObjects: true,
+            range: range(0),
+            limit: 0,
+        });
+        self();
+        ward();
+        end();
+        newContext();
+        affect();
+        self();
+        shift();
+        end();
+        end();
+    `,
+    requirements: {
+      airSkill: 1,
+      waterSkill: 1,
+    },
+    maxCopies: 3,
+    artName: 'searingSpear',
+  },
+  /* ===========
+  Aeromancer / Pyromancer Cards
+  ========== */
+  backdraft: {
+    color: 'white/red',
+    cost: {
+      air: 1,
+    },
+    range: '0-2',
+    tags: [
+      'airSkill',
+      'fireSkill',
+    ],
+    body: `
+        declareContext();
+        targetZone({
+            range: range(0, 2),
+        });
+        affect();
+        removeTokens({
+            limit: 0,
+            ofType: fire,
+        });
+        end();
+        changeContext();
+        entityIn({
+            limit: 0,
+        });
+        makeAttackAgainst({
+            type: spell,
+            defense: motorics,
+        });
+        onHit();
+        twoEffects();
+        deal();
+        damage({
+            fire: add(3, ref(spellcastingModifier)),
+        });
+        perTokenRemoved();
+        deal();
+        damage({
+            fire: multiply(4, ref(X)),
+        });
+        end();
+        end();
+    `,
+    requirements: {
+      airSkill: 1,
+      fireSkill: 1,
+    },
+    maxCopies: 3,
+    artName: 'searingSpear',
+  },
+  lightningStrike: {
+    color: 'white/red',
+    cost: {
+      fire: 1,
+    },
+    range: '1-2',
+    tags: [
+      'airSkill',
+      'fireSkill',
+    ],
+    body: `
+        makeAttackAgainst({
+            type: spell,
+            defense: motorics,
+        });
+        targetEntity({
+            range: range(1, 2),
+        });
+        onHit();
+        deal();
+        damage({
+            lightning: add(8, ref(spellcastingModifier)),
+        });
+        end();
+        affect();
+        replaceTokens({
+            oldType: earth,
+            newType: fire,
+            limit: 1,
+        });
+        end();
+        end();
+    `,
+    requirements: {
+      airSkill: 1,
+      fireSkill: 1,
+    },
+    maxCopies: 3,
+    artName: 'searingSpear',
+  },
+  /* ===========
+  Aeromancer / Geomancer Cards
+  ========== */
+  reverberatingBlast: {
+    color: 'white/green',
+    cost: {
+      any: 1,
+    },
+    range: '1-2',
+    tags: [
+      'airSkill',
+      'earthSkill',
+    ],
+    body: `
+        makeAttackAgainst({
+            defense: physique,
+            type: spell,
+        });
+        entityIn({
+            limit: 0,
+        });
+        targetZone({
+            range: range(1, 2),
+        });
+        onHit();
+        deal();
+        damage({
+            vibration: add(3, ref(spellcastingModifier)),
+        });
+        ifDamaged({
+            type: vibration,
+        });
+        set({
+            dazed: 1,
+            impaired: 1,
+        });
+        end();
+        end();
+    `,
+    requirements: {
+      airSkill: 1,
+      earthSkill: 1,
+    },
+    maxCopies: 3,
+    artName: 'searingSpear',
+  },
+  chokingSmog: {
+    color: 'white/green',
+    cost: {
+      any: 1,
+      earth: 1,
+    },
+    range: '0-1',
+    tags: [
+      'airSkill',
+      'earthSkill',
+    ],
+    body: `
+        makeAttackAgainst({
+            defense: physique,
+            type: spell,
+        });
+        entityIn({
+            limit: 0,
+            other: true,
+            noObjects: true,
+        });
+        targetTriangle({
+            range: range(0, 1),
+        });
+        onHit();
+        deal();
+        damage({
+            decay: add(2, ref(spellcastingModifier)),
+        });
+        ifDamaged({
+            type: decay,
+        });
+        set({
+            enfeebled: 1,
+            poisoned: 4,
+        });
+        end();
+        end();
+    `,
+    requirements: {
+      airSkill: 1,
+      earthSkill: 1,
+    },
+    maxCopies: 3,
+    artName: 'searingSpear',
+  },
+  /* ===========
+  Hydromancer / Pyromancer Cards
+  ========== */
+  hydrothermicSiphon: {
+    color: 'blue/red',
+    cost: {
+      fire: 1,
+      water: 1,
+    },
+    range: '0-2',
+    tags: [
+      'waterSkill',
+      'fireSkill',
+    ],
+    body: `
+        affect();
+        targetToken();
+        removeToken();
+        end();
+        splitContext();
+        same();
+        conditional();
+        tokenWasOfType({
+            type: fire,
+        });
+        newContext();
+        makeAttackAgainst({
+            type: spell,
+            range: ranged,
+            defense: armor,
+        });
+        targetEntity({
+            range: range(0, 2),
+            noObjects: true,
+        });
+        onHit();
+        deal();
+        damage({
+            fire: add(13, ref(spellcastingModifier)),
+        });
+        end();
+        end();
+        same();
+        conditional();
+        tokenWasOfType({
+            type: water,
+        });
+        newContext();
+        affect();
+        targetEntity({
+            range: range(0, 2),
+            noObjects: true,
+        });
+        restoreHealth({
+            quantity: add(13, ref(spellcastingModifier)),
+        });
+        end();
+        end();
+    `,
+    requirements: {
+      waterSkill: 1,
+      fireSkill: 1,
+    },
+    maxCopies: 3,
+    artName: 'searingSpear',
+  },
+  circulate: {
+    color: 'blue/red',
+    cost: {
+      any: 0,
+    },
+    range: '0-2',
+    tags: [
+      'waterSkill',
+      'fireSkill',
+    ],
+    body: `
+        affect();
+        targetToken({
+            limit: 3,
+            type: list(fire, water),
+        });
+        move();
+        end();
+        end();
+    `,
+    requirements: {
+      waterSkill: 1,
+      fireSkill: 1,
+    },
+    maxCopies: 3,
+    artName: 'searingSpear',
+  },
+  /* ===========
+  Hydromancer / Geomancer Cards
+  ========== */
+  mudball: {
+    color: 'blue/green',
+    cost: {
+      earth: 1,
+    },
+    range: '1-2',
+    tags: [
+      'rangedAttack',
+      'waterSkill',
+      'earthSkill',
+    ],
+    body: `
+        makeAttackAgainst({
+            type: spell,
+            range: ranged,
+            defense: motorics,
+        });
+        entityIn({
+            limit: 0,
+            noObjects: true,
+        });
+        targetZone({
+            range: range(1-2),
+        });
+        onHit();
+        deal();
+        damage({
+            mud: add(3, ref(spellcastingModifier)),
+        });
+        ifDamaged();
+        twoEffects();
+        set({
+            muddied: 3,
+        });
+        debuff({
+            duration: 3,
+        });
+        end();
+        newContext();
+        whileBuffedAnd();
+        self();
+        areAffectedByConditions({
+            conditions: muddied,
+        });
+        difficultTerrain();
+        end();
+        end();
+    `,
+    requirements: {
+      waterSkill: 1,
+      earthSkill: 1,
+    },
+    maxCopies: 3,
+    artName: 'searingSpear',
+  },
+  siphonEssence: {
+    color: 'blue/green',
+    cost: {
+      water: 1,
+    },
+    range: '0-2',
+    tags: [
+      'rangedAttack',
+      'waterSkill',
+      'earthSkill',
+    ],
+    body: `
+        makeAttackAgainst({
+            type: spell,
+            range: ranged,
+            defense: physique,
+        });
+        targetEntity({
+            noObjects: true,
+            range: range(0-2),
+        });
+        onHit();
+        deal();
+        damage({
+            decay: add(3, ref(spellcastingModifier)),
+        });
+        ifDamaged({
+            type: decay,
+        });
+        lifesteal({
+            type: decay,
+        });
+        targetEntity({
+            noObjects: true,
+            range: range(0, 2),
+            disposition: friendly,
+        });
+        end();
+        end();
+    `,
+    requirements: {
+      waterSkill: 1,
+      earthSkill: 1,
+    },
+    maxCopies: 3,
+    artName: 'searingSpear',
+  },
+  /* ===========
+  Geomancer / Pyromancer Cards
+  ========== */
+  lavaBolt: {
+    color: 'red/green',
+    cost: {
+      earth: 1,
+      fire: 1,
+    },
+    range: '1-2',
+    tags: [
+      'rangedAttack',
+      'earthSkill',
+      'fireSkill',
+    ],
+    body: `
+        makeAttackAgainst({
+            type: spell,
+            range: ranged,
+            defense: armor,
+        });
+        targetEntity({
+            range: range(1-2),
+        });
+        onHit();
+        deal();
+        damage({
+            lava: add(15, ref(spellcastingModifier)),
+        });
+        ifDamaged();
+        set({
+            smouldering: 3,
+        });
+        end();
+        end();
+    `,
+    requirements: {
+      earthSkill: 1,
+      fireSkill: 1,
+    },
+    maxCopies: 3,
+    artName: 'searingSpear',
+  },
+  sunder: {
+    color: 'red/green',
+    cost: {
+      any: 0,
+    },
+    range: '0-2',
+    tags: [
+      'earthSkill',
+      'fireSkill',
+    ],
+    body: `
+        affect();
+        targetEntity({
+            range: range(1-2),
+        });
+        setDefenseContextDie({
+            defenses: armor,
+            to: 3,
+        });
+        end();
+        end();
+    `,
+    requirements: {
+      earthSkill: 1,
+      fireSkill: 1,
     },
     maxCopies: 3,
     artName: 'searingSpear',

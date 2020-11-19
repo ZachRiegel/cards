@@ -4,20 +4,27 @@
   "private": true,
   "homepage": "http://zachriegel.github.io/cards",
   "dependencies": {
-    "firebase": "^7.15.5",
+    "@babel/polyfill": "^7.12.1",
+    "cannon-es": "^0.15.0",
+    "firebase": "^8.0.0",
+    "framer-motion": "^1.11.1",
     "gh-pages": "^3.1.0",
+    "html2canvas": "^1.0.0-rc.5",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-scripts": "^3.4.1",
+    "react-pose": "^4.0.10",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "^4.0.0",
     "styled-components": "^5.1.1"
   },
   "scripts": {
-    "start": "react-scripts start --no-cache",
+    "start": "PORT=8123 react-scripts start --no-caches",
     "build": "react-scripts build",
     "test": "react-scripts test --no-cache",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "deploy": "gh-pages -d build",
+    "babel": "./node_modules/.bin/babel src -d dist"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -35,8 +42,11 @@
     ]
   },
   "devDependencies": {
-    "@babel/core": "^7.10.3",
-    "@babel/preset-env": "^7.10.3",
-    "@babel/preset-react": "^7.10.1"
+    "@babel/cli": "^7.12.1",
+    "@babel/core": "^7.12.3",
+    "@babel/plugin-proposal-pipeline-operator": "^7.12.1",
+    "@babel/preset-env": "^7.12.1",
+    "@babel/preset-react": "^7.10.1",
+    "babel-loader": "^8.1.0"
   }
 }

@@ -5,10 +5,6 @@ import styled, {css} from 'styled-components'
 class LoginIndicator extends React.Component {
 	static contextType = FirebaseContext;
 
-	constructor(props) {
-		super(props);
-	}
-
 	render() {
 		const Indicator= styled.div`
 			background-color: darkgrey;

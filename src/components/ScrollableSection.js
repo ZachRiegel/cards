@@ -9,6 +9,7 @@ const OuterLayer = styled.div`
     overflow-X: hidden;
     display: flex;
     flex-direction: column;
+    align-items: stretch;
 `;
 
 const InnerLayer = styled.div`
@@ -22,10 +23,15 @@ const ScrollableSection = (props) => {
     const innerRef = useRef();
     const outerRef = useRef();
     const [margin, setMargin] = useState(0);
-    const [observer] = useState(new ResizeObserver(()=>{
-        let innerWidth = innerRef.current;
-        let outerWidth = outerRef.current;
-        setMargin(`${innerWidth - outerWidth}px`);
+    const [observer] = useState(new ResizeObserver((entries)=>{
+        let innerWidth = innerRef.current.offsetWidth;
+        let outerWidth = outerRef.current.offsetWidth;
+        if (innerWidth < outerWidth) {
+            setMargin(`${Math.min(innerWidth - outerWidth - 1, 0)}px`);
+        }
+        else {
+            setMargin(0);
+        }
     }));
 
     useEffect(()=>{
@@ -42,6 +48,6 @@ const ScrollableSection = (props) => {
             </InnerLayer>
         </OuterLayer>
     )
-}
+};
 
 export default ScrollableSection;

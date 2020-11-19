@@ -19,6 +19,7 @@ import MarksmanSkill from 'images/icons/marksmanSkill.svg'
 import WaterSkill from 'images/icons/waterSkill.svg'
 import WaterCard from 'images/icons/waterCard.svg'
 import AttackIcon from 'images/icons/attack.svg'
+import XCard from 'images/icons/xCard.svg'
 import OneCard from 'images/icons/oneCard.svg'
 import TwoCard from 'images/icons/twoCard.svg'
 import ZeroCard from 'images/icons/zeroCard.svg'
@@ -28,76 +29,99 @@ import Child from 'images/icons/child.svg'
 import Option from 'images/icons/option.svg'
 import SpellcastingModifier from 'images/icons/spellcastingModifier.svg'
 import WeaponModifier from 'images/icons/weaponModifier.svg'
+
 import Search from 'images/icons/search.svg'
+import DragHandle from 'images/icons/dragHandle.svg'
+
+const iconSwitcher = (name) => {
+	switch(name) {
+		case 'attack':
+			return AttackIcon;
+		case 'fire':
+			return FireCard;
+		case 'fireSkill':
+			return FireSkill;
+		case 'fireToken':
+			return FireSkill;
+		case 'air':
+			return AirCard;
+		case 'airSkill':
+			return AirSkill;
+		case 'airToken':
+			return AirSkill;
+		case 'earth':
+			return EarthCard;
+		case 'earthSkill':
+			return EarthSkill;
+		case 'earthToken':
+			return EarthSkill;
+		case 'water':
+			return WaterCard;
+		case 'waterSkill':
+			return WaterSkill;
+		case 'waterToken':
+			return WaterSkill;
+		case 'swashbucklerSkill':
+			return SwashbucklerSkill;
+		case 'barbarianSkill':
+			return BarbarianSkill;
+		case 'legionnaireSkill':
+			return LegionnaireSkill;
+		case 'marksmanSkill':
+			return MarksmanSkill;
+		case 'xCard':
+			return XCard;
+		case 'oneCard':
+			return OneCard;
+		case 'twoCard':
+			return TwoCard;
+		case 'zeroCard':
+			return ZeroCard;
+		case 'rangedAttack':
+			return RangedAttack;
+		case 'meleeAttack':
+			return MeleeAttack;
+		case 'lock':
+			return Lock;
+		case 'range':
+			return HexRange;
+		case 'cardCopies':
+			return CardCopies;
+		case 'tag':
+			return Tag;
+		case 'child':
+			return Child;
+		case 'option':
+			return Option;
+		case 'spellcastingModifier':
+			return SpellcastingModifier;
+		case 'weaponModifier':
+			return WeaponModifier;
+		case 'search':
+			return Search;
+		case 'dragHandle':
+			return DragHandle;
+		default: {}
+	}
+}
 
 const ElementIcon = styled.div`
 	display: inline-block;
 	background-image: url(${(props) => {
-			switch(props.name) {
-				case 'attack':
-					return AttackIcon;
-				case 'fire':
-					return FireCard;
-				case 'fireSkill':
-					return FireSkill;
-				case 'air':
-					return AirCard;
-				case 'airSkill':
-					return AirSkill;
-				case 'earth':
-					return EarthCard;
-				case 'earthSkill':
-					return EarthSkill;
-				case 'water':
-					return WaterCard;
-				case 'waterSkill':
-					return WaterSkill;
-				case 'swashbucklerSkill':
-					return SwashbucklerSkill;
-				case 'barbarianSkill':
-					return BarbarianSkill;
-				case 'legionnaireSkill':
-					return LegionnaireSkill;
-					case 'marksmanSkill':
-					return MarksmanSkill;
-				case 'oneCard':
-					return OneCard;
-				case 'twoCard':
-					return TwoCard;
-				case 'zeroCard':
-					return ZeroCard;
-				case 'rangedAttack':
-					return RangedAttack;
-				case 'meleeAttack':
-					return MeleeAttack;
-				case 'lock':
-					return Lock;
-				case 'range':
-					return HexRange;
-				case 'cardCopies':
-					return CardCopies;
-				case 'tag':
-					return Tag;
-				case 'child':
-					return Child;
-				case 'option':
-					return Option;
-				case 'spellcastingModifier':
-					return SpellcastingModifier;
-				case 'weaponModifier':
-					return WeaponModifier;
-				case 'search':
-					return Search;
-				default: {}
-			}
-		}
-	});
+		return iconSwitcher(props.name);
+	}});
 	position:relative;
-	width:80px;
-	height:80px;
+	width:96px;
+	height:96px;
 	background-size: cover;
 	vertical-align: middle;
 	${props => {
+		if(props.inline) {
+			return css`
+				width: 1.4em;
+				height: 1.4em;
+			`;
+		}
 		if(props.smaller) {
 			return css`
 				width: 30px;
@@ -106,9 +130,15 @@ const ElementIcon = styled.div`
 		}
 		if(props.small) {
 			return css`
-				width: 56px;
-				height: 56px;
+				width: 50px;
+				height: 50px;
 				${props.name==='child'?'margin-left: 24px;':''}
+			`;
+		}
+		if(props.medium) {
+			return css`
+				width: 80px;
+				height: 80px;
 			`;
 		}
 		if(props.large) {
@@ -148,6 +178,13 @@ const Border = styled.div`
 			`;
 		}
 	}}
+	${props => {
+		if(props.greyscale) {
+			return css`
+				border-color: #5d5d5d;
+			`;
+		}
+	}}
 `;
 
 const borders = {
@@ -159,9 +196,47 @@ const borders = {
 	legionnaireSkill: true,
 	swashbucklerSkill: true,
 	marksmanSkill: true,
+	fireToken: true,
+	waterToken: true,
+	airToken: true,
+	earthToken: true,
 	rangedAttack: true,
 	meleeAttack: true,
 }
+
+const GreyMask = styled.div`
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    width: 102%;
+    padding-bottom: 102%;
+    background-color: white;
+    z-index: 2;
+    mix-blend-mode: color;
+    cursor: pointer;
+    mask-image: url(${(props) => {
+		return iconSwitcher(props.name);
+	}});
+	mask-size: 100%;
+`;
+
+const WashoutMask = styled.div`
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    width: 102%;
+    padding-bottom: 102%;
+    background-color: #999;
+    z-index: 3;
+    mix-blend-mode: screen;
+    cursor: pointer;
+    mask-image: url(${(props) => {
+		return iconSwitcher(props.name);
+	}});
+	mask-size: 100%;
+`;
 
 const Icon = React.memo((props) => {
 	return(
@@ -170,6 +245,14 @@ const Icon = React.memo((props) => {
 				? borders[props.name]
 					? <Border {...props}/>
 					: null
+				:null
+			}
+			{props.greyscale
+				? <WashoutMask {...props}/>
+				:null
+			}
+			{props.greyscale
+				? <GreyMask {...props}/>
 				:null
 			}
 		</ElementIcon>
