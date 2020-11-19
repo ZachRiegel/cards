@@ -2,7 +2,7 @@
   "name": "eldtimes",
   "version": "0.1.0",
   "private": true,
-  "homepage": "http://zachriegel.github.io/cards",
+  "homepage": "http://zachriegel.github.io/",
   "dependencies": {
     "@babel/polyfill": "^7.12.1",
     "cannon-es": "^0.15.0",
