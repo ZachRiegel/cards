@@ -1092,7 +1092,7 @@ const interpretInner = (text) => {
     let dict = {};
     content = content.split(/\s/g);
     content.forEach((val) => {
-        let [key, value] = val.split(/(?<!\\):/);
+        let [key, value] = val.split(/:/);
         if(!key) return;
         dict[key] = interpretFunctionChain(value);
     })
