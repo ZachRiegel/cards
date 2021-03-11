@@ -1,5 +1,5 @@
-import React from 'react'
-import app from 'firebase/app'
+import React, {useEffect, useState, useCallback} from 'react'
+import firebase from 'firebase/app'
 import 'firebase/auth'
 import 'firebase/database'
 import 'firebase/firestore'
@@ -15,41 +15,52 @@ const config = {
   appId: "1:652140980056:web:27e74e6d9237d6e4"
 };
 
-class Firebase extends React.Component{
-  constructor(props) {
-    super(props);
-    if(!app.apps.length)
-      app.initializeApp(config);
-    this.state={
-      app: app,
-      user: undefined,
-      token: undefined,
-      database: app.database(),
-      loggedIn: false,
-      signInWithPopup: this.signInWithPopup,
-    };
-  }
+const Firebase = (props) => {
+   let [app, setApp] = useState(!firebase.apps.length
+      ? firebase.initializeApp(config)
+      : firebase.app()
+   );
+   let [database, setDatabase] = useState(app.database());
+   let [auth, setAuth] = useState(app.auth());
 
-  signInWithPopup = () => {
-    let provider = new this.state.app.auth.GoogleAuthProvider();
-    this.state.app.auth().signInWithPopup(provider).then((result) => {
-      this.setState({
-        user: result.user,
-        token: result.credential.accessToken,
-        loggedIn: true,
+  let [user, setUser] = useState();
+  let [token, setToken] = useState();
+  let [loggedIn, setLoggedIn] = useState();
+
+   useEffect((user) => {
+      auth.onAuthStateChanged((user) => {
+            setUser(user);
+            setLoggedIn(!!user);
       });
-    }).catch((error)=>{
-      console.log(JSON.stringify(error));
-    });
-  }
+   }, [auth]);
 
-  render() {
-    return(
-      <FirebaseContext.Provider value={this.state}>
-        {this.props.children}
-      </FirebaseContext.Provider>
-    );
-  }
+  let signInWithPopup = () => {
+    let provider = new firebase.auth.GoogleAuthProvider();
+    return firebase.auth().signInWithPopup(provider).then((result) => {
+      return result.user;
+   }).then((user) => {
+      return database.ref('Users').child(user.uid).get().then((snapshot) => {
+         if (!snapshot.exists()) return database.ref(`Users/${user.uid}`).update({
+            characters: [],
+            email: user.email,
+         });
+      });
+   }).catch((error)=>{
+      console.log(error);
+    });
+  };
+
+  return(
+    <FirebaseContext.Provider value={{
+      user,
+      token,
+      database,
+      loggedIn,
+      signInWithPopup,
+    }}>
+      {props.children}
+    </FirebaseContext.Provider>
+  );
 }
 
 export default Firebase;

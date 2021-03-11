@@ -1,54 +1,54 @@
-import React from 'react'
+import React, {useContext} from 'react'
 import FirebaseContext from 'contexts/FirebaseContext'
 
 import styled, {css} from 'styled-components'
 
-import googleSignin from 'images/branding/btn_google_signin_light_normal_web@2x.png'
 
-const GoogleButton = styled.div`
-	background-size: contain;
-	background-repeat: no-repeat;
-	background-image: url(${() => {return googleSignin}});
-	width: 100%;
-	height: 0;
-	padding-top: 24%;
-	mask-image: url(${() => {return googleSignin}});
-	mask-mode: alpha;
-	mask-size: contain;
-	mask-repeat: no-repeat;
+import googleIcon from 'images/branding/Google__G__Logo.svg'
+
+const OuterShell = styled.div`
+	height: 40px;
+	padding-left: 8px;
+	padding-right: 8px;
+	font-size: 14px;
+	font-family: 'Roboto', serif;
+	width: min-content;
+	display: flex;
+	align-items: center;
+	white-space: nowrap;
+	border: 1px solid #d3d3d3;
+	border-radius: 5px;
 	&:hover {
-		background-color: #ddd;
-		background-blend-mode: multiply;
+		background-color: #f3f3f3;
 	}
 	&:active {
-		background-color: #999;
-		background-blend-mode: multiply;
+		background-color: #e7e7e7;
 	}
+	user-select: none;
+	box-shadow: 0 1px 2px rgba(0,0,0,0.19), 0 1px 1px rgba(0,0,0,0.23);
 `;
 
-class GoogleLoginButton extends React.Component {
-	static contextType = FirebaseContext;
+const GoogleIcon = styled.div`
+	display: inline-block;
+	width: 18px;
+	height: 18px;
+	margin-right: 24px;
+	background-image: url(${googleIcon});
+`;
 
-	constructor(props) {
-		super(props);
-		this.state = {
-			burn: 0,
-		};
-	}
+const Text = styled.div`
+	display: inline-block;
+	white-space: no-space;
+`
 
-	setBurn = (burn) => {
-		if(!burn||this.state.burn<burn) this.setState({
-			burn: burn,
-		});
-	}
+let GoogleLoginButton = () => {
+	let firebase = useContext(FirebaseContext);
 
-	render() {
-		
-
-		return (
-			<GoogleButton src={googleSignin} onMouseDown={this.context.signInWithPopup}/>
-		);
-	};
+	return(
+		<OuterShell onClick={firebase.signInWithPopup}>
+			<GoogleIcon/><Text>Sign in with Google</Text>
+		</OuterShell>
+	);
 }
 
 export default GoogleLoginButton;
