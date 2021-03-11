@@ -16,7 +16,7 @@ const App = () => {
       <div style={{width:'100vw', height: '100vh', backgroundColor: 'black'}}/>
       <div style={{position: 'absolute',top:0, width:'100vw', height: '100vh'}}>
          <FireBase>
-            <BrowserRouter basename="/eldtimes">
+            <BrowserRouter>
                <Switch>
                   <Route path={['']}>
                      <LandingPage/>
