@@ -3,10 +3,9 @@ import React, {useState, useCallback} from 'react'
 import styled, {css} from 'styled-components'
 import Card from 'components/Card'
 import Delay from 'components/Delay'
-import { AnimatePresence, motion } from 'framer-motion'
 
 
-const CardDisplay = styled(motion.div)`
+const CardDisplay = styled.div`
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -15,7 +14,7 @@ const CardDisplay = styled(motion.div)`
     margin: 0px 0px 0px -20px;
 `;
 
-const CardEntry = styled(motion.div)`
+const CardEntry = styled.div`
     margin: 20px 0 0 20px;
     padding: 0;
     border: 0;
@@ -33,19 +32,16 @@ const CardEntry = styled(motion.div)`
     flex: 1;
 `;
 
-const Animator = styled(motion.div)`
-`;
-
 const item = (x) => ({
     hidden: {
         opacity: 0
     },
-    show: { 
+    show: {
         opacity: 1,
         transition: {
-            delay: (.5*x)/(x**.5), 
+            delay: (.5*x)/(x**.5),
             duration:1,
-        } 
+        }
     }
 });
 

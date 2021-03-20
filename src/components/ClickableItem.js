@@ -20,9 +20,12 @@ const Shell = styled.div`
    display: flex;
    flex-direction: row;
    align-items: center;
+   line-height: 24px;
+   margin-right: 18px;
    ${props => props.selected
       ? css`
-         padding-left: 10px;
+         padding-left: 16px;
+         margin-right: 8px;
          font-size: 24px;
       `
       : null
@@ -43,7 +46,8 @@ const Shell = styled.div`
    transition:
       padding 500ms ease,
       font-size 500ms ease,
-      background-color 200ms linear;
+      background-color 200ms linear,
+      margin 500ms ease;
 	user-select: none;
    position: relative;
    ${props => props.asButton
@@ -149,6 +153,18 @@ const LockedIcon = styled.div`
    background-image: url(${Locked});
 `;
 
+const Text = styled.div`
+   overflow: 'hidden';
+   ${props =>
+      css`
+         width: ${props.width || 'initial'};
+      `
+   }
+   white-space: nowrap;
+   text-decoration: selected?'underline #c7c7c7':'underline transparent';
+   transition: 'text-decoration-color 300ms';
+`;
+
 const ClickableItem = (props) => {
    let {selected, click, asButton, iconName, disabled} = props;
    let renderIcon = useCallback((iconName='default') => {
@@ -193,21 +209,15 @@ const ClickableItem = (props) => {
             ? <TransitionWidth>
                <FadeBetween animationKey={props.animationKey}>
                   <AnimatedContainer>
-                        <div style={{
-                           textDecoration: selected?'underline #c7c7c7':'none',
-                           transition: 'text-decoration-color 300ms'
-                        }}>
+                        <Text width={props.width}>
                            {props.children}
-                        </div>
+                        </Text>
                   </AnimatedContainer>
                </FadeBetween>
             </TransitionWidth>
-            : <div style={{
-               textDecoration: selected?'underline #c7c7c7':'underline transparent',
-               transition: 'text-decoration-color 300ms'
-            }}>
+            : <Text width={props.width}>
                {props.children}
-            </div>
+            </Text>
          }
       </Shell>
 	);

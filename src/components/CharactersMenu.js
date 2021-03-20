@@ -4,35 +4,21 @@ import React, {
    useState,
    useCallback,
 } from 'react'
-
+import FirebaseContext from 'contexts/FirebaseContext'
+import {useHints} from './Hints'
 import styled from 'styled-components'
 
 import Header from './Header'
-import Row from './Row'
 import ClickableItem from './ClickableItem'
-import CenterElements from './CenterElements'
-import FirebaseContext from 'contexts/FirebaseContext'
-
+import FadeBetweenRoutes from './FadeBetweenRoutes'
 import AnimatedContainer from './AnimatedContainer'
 import LoadingIcon from './LoadingIcon'
-import FadeBetween from './FadeBetween'
-import useNextPath from './useNextPath'
+import useRouting, {Route} from './useRouting'
 import NavAction from './NavAction'
 import Hints from './Hints'
+import FadeBetween from './FadeBetween'
 
 import CharacterCreationMenu, {CharacterCreationMenuHints} from './CharacterCreationMenu'
-
-import {
-  Route,
-  useRouteMatch,
-  useHistory,
-  useLocation,
-  Switch
-} from "react-router-dom";
-
-import {
-   useHints,
-} from './Hints'
 
 const CharactersMenuHints = () => {
    let [hints, setHints] = useHints('characters');
@@ -52,10 +38,9 @@ const CharactersMenuHints = () => {
 }
 
 const CharactersMenu = (props) => {
-   let history = useHistory();
    let firebase = useContext(FirebaseContext);
 
-   let {path, location, nextPath} = useNextPath('character menu');
+   let {path, location, nextPath, goRelative} = useRouting();
 
    let [hints, setHints] = useHints('characters');
    let [fore, setFore] = useState(false);
@@ -64,6 +49,7 @@ const CharactersMenu = (props) => {
    const driveClickable = useCallback((id) => ({
       click: x => setSelected(id),
       selected: selected === id,
+      width: '300px',
    }));
 
    //Selects first character in the users characters
@@ -72,12 +58,11 @@ const CharactersMenu = (props) => {
    }, [hints]);
 
    return(
-      <Hints>
+      <Hints name="characters">
          {Object.entries(hints?.characters || {}).map(([id, character]) =>
             <CharacterCreationMenuHints key={id} id={id}/>
          )}
-         <FadeBetween animationKey={nextPath}>
-            <Switch location={location}>
+            <FadeBetweenRoutes>
                <Route exact path={path}>
                   <FadeBetween animationKey={!!hints?.characters}>
                      {hints?.characters
@@ -87,7 +72,7 @@ const CharactersMenu = (props) => {
                            </Header>
                            {Object.entries(hints.characters || {})
                               .map(([id, character]) =>
-                              <ClickableItem {...driveClickable(id)} key={id}>{character?.name || id}</ClickableItem>
+                              <ClickableItem {...driveClickable(id)} key={id}>{character?.characterName || id}</ClickableItem>
                            )}
                            {Object.keys(hints.characters||{}).length < 5
                               ? <ClickableItem {...driveClickable('new')}>Create a New Character!</ClickableItem>
@@ -95,13 +80,12 @@ const CharactersMenu = (props) => {
                            }
                            <div style={{height: '30px'}}/>
                            <NavAction back {...{fore,}}>
-                              {/* <ClickableItem asButton click={()=> history.goBack()}>Go Back</ClickableItem> */}
                               <ClickableItem asButton click={() => {
                                  setFore(true);
                                  let key = selected === 'new'
                                     ?  firebase.database.ref(`Users/${firebase.user.uid}/Characters`).push().key
                                     :  selected;
-                                 history.push(`${path}/CharacterCreation/${key}`);
+                                 goRelative(`CharacterCreation/${key}`);
                               }}>Select Character</ClickableItem>
                            </NavAction>
                         </AnimatedContainer>
@@ -112,8 +96,7 @@ const CharactersMenu = (props) => {
                <Route path={`${path}/CharacterCreation/:characterId`}>
                   <CharacterCreationMenu/>
                </Route>
-            </Switch>
-         </FadeBetween>
+            </FadeBetweenRoutes>
       </Hints>
    );
 };

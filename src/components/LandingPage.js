@@ -24,11 +24,11 @@ import {
   useLocation,
   useHistory
 } from "react-router-dom";
-import useNextPath from './useNextPath'
+import useRouting from './useRouting'
 
 const LandingPage = () => {
    let firebase = useContext(FirebaseContext);
-   const {location, nextPath} = useNextPath('landing page');
+   const {location, nextPath} = useRouting();
    const history = useHistory();
 
    return(

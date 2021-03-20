@@ -5,19 +5,17 @@
   "homepage": "http://zachriegel.github.io/",
   "dependencies": {
     "@babel/polyfill": "^7.12.1",
-    "cannon-es": "^0.15.0",
-    "firebase": "^8.2.9",
-    "framer-motion": "^1.11.1",
+    "circular-dependency-plugin": "^5.2.2",
+    "firebase": "^8.3.0",
     "gh-pages": "^3.1.0",
-    "html2canvas": "^1.0.0-rc.5",
     "lodash": "^4.17.21",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0",
     "react-pose": "^4.0.10",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "^4.0.0",
+    "react-scripts": "^4.0.3",
     "react-transition-group": "^4.4.1",
-    "styled-components": "^5.1.1"
+    "styled-components": "^5.2.1"
   },
   "scripts": {
     "start": "PORT=8123 react-scripts start --no-caches",
@@ -43,12 +41,5 @@
       "last 1 safari version"
     ]
   },
-  "devDependencies": {
-    "@babel/cli": "^7.12.1",
-    "@babel/core": "^7.12.3",
-    "@babel/plugin-proposal-pipeline-operator": "^7.12.1",
-    "@babel/preset-env": "^7.12.1",
-    "@babel/preset-react": "^7.10.1",
-    "babel-loader": "^8.1.0"
-  }
+  "devDependencies": {}
 }
